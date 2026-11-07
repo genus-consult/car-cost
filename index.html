@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#111c2b">
+  <meta name="theme-color" content="#f7f8fa">
   <meta name="description" content="An interactive, transparent 5-year comparison of petrol and battery-financed electric car ownership costs.">
-  <title>Car Cost Lab — Petrol vs Battery-Financed EV</title>
+  <title>Petrol vs electric car — cost comparison</title>
   <style>
     :root{--ink:#132133;--deep:#121f2e;--muted:#637387;--paper:#f5f7f8;--line:#dce4eb;--white:#fff;--petrol:#356bbb;--ev:#12866d;--mint:#ddf7e8;--blue:#eaf1fc;--danger:#b24b39;--shadow:0 14px 38px rgba(21,39,63,.07);color-scheme:light}
     *{box-sizing:border-box}
@@ -110,49 +110,114 @@
     html:not(.js-active) .toolbar{display:none}
     html:not(.js-active) input{pointer-events:none;opacity:.75}
     @media(max-width:600px){.preview-warning{font-size:11px;padding:12px}}
+
+    /* Quiet, mobile-friendly interface for family use. */
+    :root{--ink:#202a36;--muted:#697686;--paper:#f7f8fa;--line:#dfe4e9;--shadow:none}
+    .hero{background:#fff;color:#202a36;border-bottom:1px solid var(--line);padding:19px 0 18px}
+    .topnav{margin:0 0 13px}
+    .brand{font-weight:720;font-size:15px;letter-spacing:0}
+    .tag{color:#78828e;background:#f4f6f8;border:1px solid #e5e8ed;text-transform:none;font-size:11px;letter-spacing:0}
+    h1{font-size:clamp(23px,4vw,30px);font-weight:730;letter-spacing:-.035em;line-height:1.18}
+    .hero-copy{font-size:13px;line-height:1.55;color:#667382;margin:9px 0 0}
+    .hero-foot{margin-top:12px;color:#6e7c89;font-size:12px;gap:8px}
+    .hero-foot span{border:1px solid #e0e6eb;background:#fafbfd;border-radius:6px;padding:4px 8px}
+    .page-switch{display:flex;gap:20px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:60}
+    .page-switch-button{border:0;background:none;padding:12px 2px 11px;color:#6b7682;font-size:13px;font-weight:580;border-bottom:2px solid transparent;min-height:44px}
+    .page-switch-button.active{color:#1c334a;border-bottom-color:#496c8d;font-weight:750}
+    .main{margin-top:23px;padding-bottom:40px}
+    .results{gap:12px}
+    .result-card,.panel,.control-box{box-shadow:none;border-radius:13px}
+    .result-card.cheaper{box-shadow:none;border-color:#a9bec6}
+    .money{margin-top:16px;letter-spacing:-.04em}
+    .bar-bg{display:none}
+    .result-sub{margin-top:16px}
+    .cheaper-pill{color:#426058;background:#eef3f1;font-size:10px;border-radius:6px;padding:3px 6px}
+    .insight{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px 18px;margin-top:14px}
+    .insight-icon{display:none}
+    .insight p{color:#647383}
+    .summary-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    .summary-actions .btn{font-size:13px;padding:11px 15px}
+    .btn.primary{background:#273a4a;border-color:#273a4a}
+    .summary-note{font-size:12px;color:#637080;line-height:1.65;max-width:740px;margin:16px 1px}
+    .section-head{margin:0 0 18px}
+    .workbench{grid-template-columns:minmax(0,850px);gap:0}
+    body[data-view="overview"] .section-head,body[data-view="overview"] .workbench{display:none!important}
+    body[data-view="assumptions"] .main>section[aria-label="Comparison results"],body[data-view="assumptions"] .report{display:none!important}
+    body[data-view="details"] .main>section[aria-label="Comparison results"],body[data-view="details"] .section-head,body[data-view="details"] .inputs{display:none!important}
+    body:not([data-view="overview"]) .hero h1,body:not([data-view="overview"]) .hero .hero-copy,body:not([data-view="overview"]) .hero .hero-foot{display:none}
+    body:not([data-view="overview"]) .hero .topnav{margin-bottom:0}
+    body[data-view="overview"] .dock{display:none!important}
+    .panel{margin-bottom:13px}
+    .foot{font-size:11px}
+    @media(max-width:600px){
+      .hero{padding:14px 0 15px}
+      .topnav{margin:0 0 10px}
+      h1{font-size:23px}
+      .hero-copy{font-size:12px;margin-top:9px}
+      .hero-foot{margin-top:10px}
+      .tag{display:none}
+      .page-switch{gap:22px}
+      .page-switch-button{font-size:13px}
+      .main{margin-top:16px;padding-bottom:96px}
+      body[data-view="overview"] .main{padding-bottom:28px}
+      .result-card{padding:17px 13px}
+      .result-card .r-top{font-size:12px}
+      .money{font-size:clamp(23px,6vw,28px);margin-top:18px}
+      .result-sub{font-size:10px;margin-top:15px}
+      .insight{margin-top:10px;padding:13px 14px}
+      .insight strong{font-size:13px}
+      .summary-actions{gap:8px}
+      .summary-actions .btn{flex:1;padding:10px 8px;white-space:nowrap;font-size:12px}
+      .summary-note{font-size:11px}
+      .workbench{display:block}
+      .section-head{margin:0 0 13px}
+    }
+  
   </style>
 </head>
-<body>
+<body data-view="overview">
   <header class="hero">
     <div class="shell">
-      <nav class="topnav" aria-label="Header">
-        <div class="brand"><div class="mark">↗</div> CAR COST LAB</div>
-        <span class="tag">Independent ownership model · INR</span>
-      </nav>
-      <p class="eyebrow">Your money, your assumptions</p>
-      <h1>What does a car<br>really cost each month?</h1>
-      <p class="hero-copy">Compare a petrol car with a battery-financed electric car over five years. Change any number and see the economics update instantly.</p>
-      <div class="hero-foot"><span id="heroYears">5-year ownership</span><span id="heroKm">40 km daily</span><span>6% opportunity-cost baseline</span></div>
+      <div class="topnav"><div class="brand">Car cost comparison</div><span class="tag">Family estimate</span></div>
+      <h1>Petrol and electric car costs</h1>
+      <p class="hero-copy">An estimate of monthly ownership costs over five years. Change any assumption to compare different situations.</p>
+      <div class="hero-foot"><span id="heroYears">5-year ownership</span><span id="heroKm">40 km daily</span></div>
     </div>
   </header>
+  <nav class="page-switch shell" aria-label="Calculator pages">
+    <button type="button" class="page-switch-button active" data-view-target="overview" aria-current="page">Comparison</button>
+    <button type="button" class="page-switch-button" data-view-target="assumptions">Assumptions</button>
+    <button type="button" class="page-switch-button" data-view-target="details">Details</button>
+  </nav>
 
   <main class="shell main">
     <section aria-label="Comparison results">
       <div class="results" aria-live="polite" aria-atomic="true">
-        <article class="result-card petrol cheaper" id="petrolCard">
-          <div class="r-top"><span><i class="label-dot"></i>Petrol car</span><span id="petrolBest" class="cheaper-pill">LOWER COST</span></div>
+        <article class="result-card petrol" id="petrolCard">
+          <div class="r-top"><span><i class="label-dot"></i>Petrol car</span><span id="petrolBest"></span></div>
           <div class="money" id="petrolMonthly">₹49,619</div>
-          <div class="permonth">economic cost / month</div>
-          <div class="bar-bg"><div class="bar" id="petrolBar" style="width:97.2837%"></div></div>
-          <div class="result-sub"><span id="petrol5yr">Nominal net: ₹27.22 L</span><span id="petrolRun">Running: ₹33,703/mo</span></div>
+          <div class="permonth">estimated cost / month</div>
+          <div class="bar-bg"><div class="bar" id="petrolBar" style="width:100%"></div></div>
+          <div class="result-sub"><span id="petrol5yr">5-year net: ₹27.22 L</span><span id="petrolRun">Running: ₹33,703/mo</span></div>
         </article>
-        <article class="result-card ev" id="evCard">
-          <div class="r-top"><span><i class="label-dot"></i>Subscription EV</span><span id="evBest"></span></div>
-          <div class="money" id="evMonthly">₹51,005</div>
-          <div class="permonth">economic cost / month</div>
-          <div class="bar-bg"><div class="bar" id="evBar" style="width:100%"></div></div>
-          <div class="result-sub"><span id="ev5yr">Nominal net: ₹27.94 L</span><span id="evRun">Running: ₹33,644/mo</span></div>
+        <article class="result-card ev cheaper" id="evCard">
+          <div class="r-top"><span><i class="label-dot"></i>Electric car</span><span id="evBest" class="cheaper-pill">Lower estimate</span></div>
+          <div class="money" id="evMonthly">₹43,301</div>
+          <div class="permonth">estimated cost / month</div>
+          <div class="bar-bg"><div class="bar" id="evBar" style="width:87.27%"></div></div>
+          <div class="result-sub"><span id="ev5yr">5-year net: ₹23.94 L</span><span id="evRun">Running: ₹33,644/mo</span></div>
         </article>
       </div>
-      <div class="insight"><div class="insight-icon" aria-hidden="true">↗</div><div><strong id="winnerText">Petrol costs ₹1,385 less per month</strong><p id="winnerNote">Equivalent to ₹16,625 per year in level monthly economic cost, at 6% opportunity cost.</p></div></div>
-      <div class="preview-warning" role="note"><strong>Static preview · JavaScript is unavailable here</strong>These are the results for the original assumptions. This iPhone file preview may not run the live calculator, so editing values here will not recalculate them. Once the page is hosted on a normal HTTPS website, open its link in Safari to edit inputs, recalculate instantly and share scenarios.</div>
+      <div class="insight"><div><strong id="winnerText">Electric car costs ₹6,318 less per month</strong><p id="winnerNote">Based on the current assumptions, including the cost of money invested in the car.</p></div></div>
+      <div class="summary-actions"><button type="button" class="btn primary" data-view-target="assumptions">Change assumptions</button><button type="button" class="btn" data-view-target="details">View cost breakdown</button></div>
+      <p class="summary-note">These are estimated monthly economic costs, not the amount paid each month. They include purchase, running expenses, resale and a 6% annual opportunity-cost assumption. The EV purchase price excludes its separately financed battery.</p>
+      <div class="preview-warning" role="note"><strong>Static file preview</strong>This preview may show estimated figures without live calculations. Open the website in your browser to change assumptions.</div>
     </section>
 
     <div class="section-head">
-      <div><h2>Model workspace</h2><p>Everything is editable. Values are in Indian rupees unless specified.</p></div>
+      <div><h2>Assumptions</h2><p>Change any figure. The comparison updates automatically.</p></div>
       <div class="toolbar">
         <button class="btn" type="button" id="resetBtn" title="Restore the original assumptions">↺ Reset values</button>
-        <button class="btn primary" type="button" id="shareBtn">↗ Share scenario</button>
       </div>
     </div>
 
@@ -183,7 +248,7 @@
         <details class="control-box" open>
           <summary><span class="sum-title"><span class="num" style="background:#e4f6ed;color:var(--ev)">03</span> Battery-financed EV</span><span class="chev">+</span></summary>
           <div class="controls">
-            <div class="input-row"><label for="eCost"><span class="input-title">On-road purchase price</span><span class="input-hint">Excludes separately financed battery · Year 1 insurance included</span></label><div class="numfield"><span class="unit">₹</span><input id="eCost" type="number" min="0" step="10000" value="1200000"></div></div>
+            <div class="input-row"><label for="eCost"><span class="input-title">On-road purchase price</span><span class="input-hint">Excludes separately financed battery · Year 1 insurance included</span></label><div class="numfield"><span class="unit">₹</span><input id="eCost" type="number" min="0" step="10000" value="800000"></div></div>
             <div class="input-row"><label for="eEfficiency"><span class="input-title">Electricity usage</span><span class="input-hint">kWh/km at wall, charging losses included</span></label><div class="numfield"><input id="eEfficiency" type="number" min="0" step="0.01" value="0.20"><span class="unit" style="padding:0 9px 0 0">kWh/km</span></div></div>
             <div class="input-row"><label for="eTariff"><span class="input-title">Electricity price</span><span class="input-hint">₹ per unit · all-in assumption</span></label><div class="numfield"><span class="unit">₹</span><input id="eTariff" type="number" min="0" step="0.5" value="11"></div></div>
             <div class="input-row"><label for="eCharger"><span class="input-title">Home charger & installation</span><span class="input-hint">One-time, upfront</span></label><div class="numfield"><span class="unit">₹</span><input id="eCharger" type="number" min="0" step="5000" value="75000"></div></div>
@@ -193,7 +258,7 @@
           </div>
         </details>
 
-        <details class="control-box" open>
+        <details class="control-box">
           <summary><span class="sum-title"><span class="num">04</span> EV battery financing</span><span class="chev">+</span></summary>
           <div class="controls">
             <div class="input-row"><label for="loanPrincipal"><span class="input-title">Battery loan principal</span><span class="input-hint">Financed separately · no upfront battery payment assumed</span></label><div class="numfield"><span class="unit">₹</span><input id="loanPrincipal" type="number" min="0" step="10000" value="550000"></div></div>
@@ -222,11 +287,11 @@
 
       <aside class="report" aria-label="Calculated breakdown and methodology">
         <section class="panel">
-          <h3>Where the monthly cost comes from</h3>
+          <h3>Monthly cost breakdown</h3>
           <p class="small">Each figure is an equivalent monthly economic cost, discounted at your opportunity-cost rate. Resale proceeds reduce the cost.</p>
           <table class="breakdown" aria-label="Monthly equivalent cost components">
             <thead><tr><th scope="col">Component</th><th scope="col">Petrol</th><th scope="col">EV</th></tr></thead>
-            <tbody id="breakdownRows"><tr><td>Car purchase</td><td>₹23,111</td><td>₹23,111</td></tr><tr><td>Resale proceeds (−)</td><td class="negative">-₹7,196</td><td class="negative">-₹7,196</td></tr><tr><td>Driver salary</td><td>₹18,000</td><td>₹18,000</td></tr><tr><td>Petrol / electricity</td><td>₹13,870</td><td>₹2,677</td></tr><tr><td>Insurance renewals</td><td>₹1,001</td><td>₹1,001</td></tr><tr><td>Maintenance</td><td>₹833</td><td>₹417</td></tr><tr><td>Home charger</td><td>₹0</td><td>₹1,444</td></tr><tr><td>Battery loan EMIs</td><td>₹0</td><td>₹11,551</td></tr><tr class="total"><td>Total / month</td><td>₹49,619</td><td>₹51,005</td></tr></tbody>
+            <tbody id="breakdownRows"><tr><td>Car purchase</td><td>₹23,111</td><td>₹15,407</td></tr><tr><td>Resale proceeds (−)</td><td class="negative">-₹7,196</td><td class="negative">-₹7,196</td></tr><tr><td>Driver salary</td><td>₹18,000</td><td>₹18,000</td></tr><tr><td>Petrol / electricity</td><td>₹13,870</td><td>₹2,677</td></tr><tr><td>Insurance renewals</td><td>₹1,001</td><td>₹1,001</td></tr><tr><td>Maintenance</td><td>₹833</td><td>₹417</td></tr><tr><td>Home charger</td><td>₹0</td><td>₹1,444</td></tr><tr><td>Battery loan EMIs</td><td>₹0</td><td>₹11,551</td></tr><tr class="total"><td>Total / month</td><td>₹49,619</td><td>₹43,301</td></tr></tbody>
           </table>
           <p class="note">Figures are rounded for display; totals use full-precision values. Purchase and resale are not double-counted as depreciation.</p>
         </section>
@@ -236,7 +301,7 @@
           <p class="small">Alternative views of the same cash flows, to help with budgeting.</p>
           <div class="mini-stat-grid">
             <div class="mini-stat"><label>Petrol · nominal net cost</label><b id="pNominal">₹27.22 L</b></div>
-            <div class="mini-stat"><label>EV · nominal net cost</label><b id="eNominal">₹27.94 L</b></div>
+            <div class="mini-stat"><label>EV · nominal net cost</label><b id="eNominal">₹23.94 L</b></div>
             <div class="mini-stat"><label>Petrol · average running bills</label><b id="pBills">₹33,703/mo</b></div>
             <div class="mini-stat"><label>EV · average running bills</label><b id="eBills">₹33,644/mo</b></div>
           </div>
@@ -259,7 +324,7 @@
           <p>The EMI is paid only while the loan is active. If the ownership period ends before the loan, the outstanding balance is settled at sale and added to cost. If it ends afterward, EMI payments stop once the loan is repaid.</p>
           <div class="subheads">Assumptions & source notes</div>
           <ul>
-            <li>Both purchase prices are hypothetical ₹12 lakh on-road figures. The EV price <strong>excludes the separately financed battery</strong>, while EV resale includes the battery.</li>
+            <li>The petrol purchase price is assumed at ₹12 lakh on road and the EV at ₹8 lakh on road. The EV price <strong>excludes the separately financed battery</strong>, while EV resale includes the battery.</li>
             <li>Year 1 insurance is inside each purchase price. ₹15,000 renewal is paid for Years 2 onward. No insurance is charged twice.</li>
             <li>365 days/year; monthly running is the annual distance divided by 12. Consumption at the wall includes charging losses.</li>
             <li>Driver cost is identical for both, but included in the full cost of ownership.</li>
@@ -272,14 +337,14 @@
         </section>
       </aside>
     </div>
-    <footer class="foot"><span>CAR COST LAB · Pre-calculated preview · Interactive in a JavaScript-capable browser</span><span id="scenarioStatus">Defaults: November 2026</span></footer>
+    <footer class="foot"><span>Car cost comparison · Illustrative estimates only</span><span id="scenarioStatus">Default assumptions · November 2026</span></footer>
   </main>
-  <div class="dock" role="status"><div class="d-item"><div class="dlabel">PETROL / MONTH</div><b id="dockPetrol">₹49,619</b></div><div class="divider"></div><div class="d-item"><div class="dlabel">EV / MONTH</div><b id="dockEv">₹51,005</b></div></div>
+  <div class="dock" role="status"><div class="d-item"><div class="dlabel">PETROL / MONTH</div><b id="dockPetrol">₹49,619</b></div><div class="divider"></div><div class="d-item"><div class="dlabel">EV / MONTH</div><b id="dockEv">₹43,301</b></div></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
   (function(){'use strict';
-    const defaults={dailyKm:40,years:5,driver:18000,discount:6,pCost:1200000,pMileage:10,pFuel:114,pInsurance:15000,pMaintenance:10000,pResale:500000,eCost:1200000,eEfficiency:0.20,eTariff:11,eCharger:75000,eInsurance:15000,eMaintenance:5000,eResale:500000,loanPrincipal:550000,loanAPR:9.5,loanMonths:60,gFuel:0,gElec:0,gDriver:0,gService:0,gInsurance:0};
+    const defaults={dailyKm:40,years:5,driver:18000,discount:6,pCost:1200000,pMileage:10,pFuel:114,pInsurance:15000,pMaintenance:10000,pResale:500000,eCost:800000,eEfficiency:0.20,eTariff:11,eCharger:75000,eInsurance:15000,eMaintenance:5000,eResale:500000,loanPrincipal:550000,loanAPR:9.5,loanMonths:60,gFuel:0,gElec:0,gDriver:0,gService:0,gInsurance:0};
     const ids=Object.keys(defaults), inputs=Object.fromEntries(ids.map(k=>[k,document.getElementById(k)]));
     const $=s=>document.getElementById(s);
     const money=v=> (v<0?'-':'')+'₹'+Math.abs(Math.round(v)).toLocaleString('en-IN');
@@ -329,8 +394,8 @@
       $('heroYears').textContent=a.years+'-year ownership';$('heroKm').textContent=a.dailyKm+' km daily';
       $('petrolMonthly').textContent=money(r.mp);$('evMonthly').textContent=money(r.me);
       $('dockPetrol').textContent=money(r.mp);$('dockEv').textContent=money(r.me);
-      $('petrol5yr').textContent='Nominal net: '+compact(r.pNominal);
-      $('ev5yr').textContent='Nominal net: '+compact(r.eNominal);
+      $('petrol5yr').textContent='5-year net: '+compact(r.pNominal);
+      $('ev5yr').textContent='5-year net: '+compact(r.eNominal);
       $('petrolRun').textContent='Running: '+money(r.pRun)+'/mo';
       $('evRun').textContent='Running: '+money(r.eRun)+'/mo';
       $('pNominal').textContent=compact(r.pNominal);$('eNominal').textContent=compact(r.eNominal);
@@ -340,11 +405,11 @@
       $('petrolBar').style.width=Math.max(0,r.mp)/max*100+'%';$('evBar').style.width=Math.max(0,r.me)/max*100+'%';
       const lessP=r.mp<r.me-0.5,lessE=r.me<r.mp-0.5;
       $('petrolCard').classList.toggle('cheaper',lessP);$('evCard').classList.toggle('cheaper',lessE);
-      $('petrolBest').textContent=lessP?'LOWER COST':'';$('evBest').textContent=lessE?'LOWER COST':'';
+      $('petrolBest').textContent=lessP?'Lower estimate':'';$('evBest').textContent=lessE?'Lower estimate':'';
       $('petrolBest').className=lessP?'cheaper-pill':'';$('evBest').className=lessE?'cheaper-pill':'';
       const diff=Math.abs(r.mp-r.me);const fav=lessP?'Petrol':lessE?'EV':null;
       $('winnerText').textContent=fav?fav+' costs '+money(diff)+' less per month':'The two cars have almost identical monthly cost';
-      $('winnerNote').textContent=fav?'Equivalent to '+money(diff*12)+' per year in level monthly economic cost, at '+a.discount+'% opportunity cost.':'Both results are within ₹1/month under the current assumptions.';
+      $('winnerNote').textContent=fav?'Based on the current assumptions, including the cost of money invested in the car.':'Both results are within ₹1/month under the current assumptions.';
       const tbody=$('breakdownRows');tbody.textContent='';
       rowLabels.forEach(([key,label])=>{
         const x=r.p[key].pv/r.denom,y=r.e[key].pv/r.denom;
@@ -355,25 +420,27 @@
       const t=document.createElement('tr');t.className='total';['Total / month',money(r.mp),money(r.me)].forEach(s=>{const td=document.createElement('td');td.textContent=s;t.appendChild(td);});tbody.appendChild(t);
     }
     ids.forEach(k=>inputs[k].addEventListener('input',()=>{if(isSafe(values()))render();}));
-    $('resetBtn').addEventListener('click',()=>{ids.forEach(k=>inputs[k].value=defaults[k]);render();$('scenarioStatus').textContent='Defaults: November 2026';notify('Original assumptions restored.');});
-    function encode(a){return btoa(JSON.stringify(ids.map(k=>a[k]))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+    $('resetBtn').addEventListener('click',()=>{ids.forEach(k=>inputs[k].value=defaults[k]);render();$('scenarioStatus').textContent='Default assumptions · November 2026';notify('Assumptions reset.');});
     function decode(s){const arr=JSON.parse(atob(s.replace(/-/g,'+').replace(/_/g,'/')));if(!Array.isArray(arr)||arr.length!==ids.length)throw Error('Invalid');const obj=Object.fromEntries(ids.map((k,i)=>[k,Number(arr[i])]));if(!isSafe(obj))throw Error('Invalid');return obj;}
     function restoreUrl(){try{const q=new URLSearchParams(location.search).get('s');if(q){const a=decode(q);ids.forEach(k=>inputs[k].value=a[k]);$('scenarioStatus').textContent='Shared scenario';}}catch(err){notify('This shared link was invalid. Showing defaults.');}}
-    async function clipboardWrite(text){if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);return true;}const t=document.createElement('textarea');t.value=text;t.style.position='fixed';t.style.left='-9999px';document.body.appendChild(t);t.select();const ok=document.execCommand('copy');t.remove();return ok;}
-    $('shareBtn').addEventListener('click',async()=>{
-      const a=values();if(!isSafe(a))return notify('Correct the input values before sharing.');
-      if(location.protocol==='http:'||location.protocol==='https:'){
-        const url=new URL(location.href);url.searchParams.set('s',encode(a));url.hash='';
-        try{await clipboardWrite(url.toString());notify('Scenario link copied. Paste it into WhatsApp.');}
-        catch(err){prompt('Copy your scenario link:',url.toString());}
-      } else {
-        const r=last||compute(a);
-        const msg='Car Cost Lab scenario ('+a.years+' years, '+a.dailyKm+' km/day): Petrol '+money(r.mp)+'/month; EV '+money(r.me)+'/month. Battery EMI '+money(r.emi)+'/month. To share an interactive scenario link, first host this HTML file on a website.';
-        if(navigator.share){try{await navigator.share({title:'Car Cost Lab',text:msg});return;}catch(err){}}
-        try{await clipboardWrite(msg);notify('Summary copied. Host this HTML file to share interactive scenario links.');}
-        catch(err){prompt('Copy scenario summary:',msg);}
-      }
-    });
+    function selectPage(name,scrollToTop){
+      const view=['overview','assumptions','details'].includes(name)?name:'overview';
+      document.body.dataset.view=view;
+      document.querySelectorAll('.page-switch-button').forEach(button=>{
+        const active=button.dataset.viewTarget===view;
+        button.classList.toggle('active',active);
+        if(active)button.setAttribute('aria-current','page');
+        else button.removeAttribute('aria-current');
+      });
+      if(scrollToTop)window.scrollTo(0,0);
+    }
+    document.querySelectorAll('[data-view-target]').forEach(button=>button.addEventListener('click',()=>{
+      const target=button.dataset.viewTarget;
+      if(location.hash.slice(1)===target)selectPage(target,true);
+      else location.hash=target;
+    }));
+    window.addEventListener('hashchange',()=>selectPage(location.hash.slice(1),true));
+    selectPage(location.hash.slice(1),false);
     restoreUrl();render();document.documentElement.classList.add('js-active');
   })();
   </script>
