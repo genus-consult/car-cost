@@ -196,21 +196,21 @@
         <article class="result-card petrol" id="petrolCard">
           <div class="r-top"><span><i class="label-dot"></i>Petrol car</span><span id="petrolBest"></span></div>
           <div class="money" id="petrolMonthly">₹49,619</div>
-          <div class="permonth">estimated cost / month</div>
+          <div class="permonth">full ownership cost / month</div>
           <div class="bar-bg"><div class="bar" id="petrolBar" style="width:100%"></div></div>
           <div class="result-sub"><span id="petrol5yr">5-year net: ₹27.22 L</span><span id="petrolRun">Running: ₹33,703/mo</span></div>
         </article>
         <article class="result-card ev cheaper" id="evCard">
           <div class="r-top"><span><i class="label-dot"></i>Electric car</span><span id="evBest" class="cheaper-pill">Lower estimate</span></div>
           <div class="money" id="evMonthly">₹43,301</div>
-          <div class="permonth">estimated cost / month</div>
+          <div class="permonth">full ownership cost / month</div>
           <div class="bar-bg"><div class="bar" id="evBar" style="width:87.27%"></div></div>
           <div class="result-sub"><span id="ev5yr">5-year net: ₹23.94 L</span><span id="evRun">Running: ₹33,644/mo</span></div>
         </article>
       </div>
       <div class="insight"><div><strong id="winnerText">Electric car costs ₹6,318 less per month</strong><p id="winnerNote">Based on the current assumptions, including the cost of money invested in the car.</p></div></div>
       <div class="summary-actions"><button type="button" class="btn primary" data-view-target="assumptions">Change assumptions</button><button type="button" class="btn" data-view-target="details">View cost breakdown</button></div>
-      <p class="summary-note">These are estimated monthly economic costs, not the amount paid each month. They include purchase, running expenses, resale and a 6% annual opportunity-cost assumption. The EV purchase price excludes its separately financed battery.</p>
+      <p class="summary-note">These are full monthly ownership costs, not just monthly bills. They include the net purchase-and-resale cost, running expenses and a 6% annual opportunity-cost assumption. The EV purchase price excludes its separately financed battery.</p>
       <div class="preview-warning" role="note"><strong>Static file preview</strong>This preview may show estimated figures without live calculations. Open the website in your browser to change assumptions.</div>
     </section>
 
@@ -287,25 +287,25 @@
 
       <aside class="report" aria-label="Calculated breakdown and methodology">
         <section class="panel">
-          <h3>Monthly cost breakdown</h3>
-          <p class="small">Each figure is an equivalent monthly economic cost, discounted at your opportunity-cost rate. Resale proceeds reduce the cost.</p>
+          <h3>Full ownership cost per month</h3>
+          <p class="small">Includes the cost of buying the car, its resale value and the money tied up in it, as well as day-to-day expenses. It is not the amount you pay out of pocket every month.</p>
           <table class="breakdown" aria-label="Monthly equivalent cost components">
             <thead><tr><th scope="col">Component</th><th scope="col">Petrol</th><th scope="col">EV</th></tr></thead>
-            <tbody id="breakdownRows"><tr><td>Car purchase</td><td>₹23,111</td><td>₹15,407</td></tr><tr><td>Resale proceeds (−)</td><td class="negative">-₹7,196</td><td class="negative">-₹7,196</td></tr><tr><td>Driver salary</td><td>₹18,000</td><td>₹18,000</td></tr><tr><td>Petrol / electricity</td><td>₹13,870</td><td>₹2,677</td></tr><tr><td>Insurance renewals</td><td>₹1,001</td><td>₹1,001</td></tr><tr><td>Maintenance</td><td>₹833</td><td>₹417</td></tr><tr><td>Home charger</td><td>₹0</td><td>₹1,444</td></tr><tr><td>Battery loan EMIs</td><td>₹0</td><td>₹11,551</td></tr><tr class="total"><td>Total / month</td><td>₹49,619</td><td>₹43,301</td></tr></tbody>
+            <tbody id="breakdownRows"><tr><td>Car purchase</td><td>₹23,111</td><td>₹15,407</td></tr><tr><td>Resale proceeds (−)</td><td class="negative">-₹7,196</td><td class="negative">-₹7,196</td></tr><tr><td>Driver salary</td><td>₹18,000</td><td>₹18,000</td></tr><tr><td>Petrol / electricity</td><td>₹13,870</td><td>₹2,677</td></tr><tr><td>Insurance renewals</td><td>₹1,001</td><td>₹1,001</td></tr><tr><td>Maintenance</td><td>₹833</td><td>₹417</td></tr><tr><td>Home charger</td><td>₹0</td><td>₹1,444</td></tr><tr><td>Battery loan EMIs</td><td>₹0</td><td>₹11,551</td></tr><tr class="total"><td>Full cost / month</td><td>₹49,619</td><td>₹43,301</td></tr></tbody>
           </table>
           <p class="note">Figures are rounded for display; totals use full-precision values. Purchase and resale are not double-counted as depreciation.</p>
         </section>
 
         <section class="panel">
-          <h3>Operating and ownership totals</h3>
-          <p class="small">Alternative views of the same cash flows, to help with budgeting.</p>
+          <h3>Recurring expenses and five-year totals</h3>
+          <p class="small">Recurring expenses are averaged over 60 months. Full ownership costs also include the net cost of buying and later selling the car, adjusted for the 6% opportunity-cost assumption.</p>
           <div class="mini-stat-grid">
             <div class="mini-stat"><label>Petrol · nominal net cost</label><b id="pNominal">₹27.22 L</b></div>
             <div class="mini-stat"><label>EV · nominal net cost</label><b id="eNominal">₹23.94 L</b></div>
-            <div class="mini-stat"><label>Petrol · average running bills</label><b id="pBills">₹33,703/mo</b></div>
-            <div class="mini-stat"><label>EV · average running bills</label><b id="eBills">₹33,644/mo</b></div>
+            <div class="mini-stat"><label>Petrol · average recurring expenses</label><b id="pBills">₹33,703/mo</b></div>
+            <div class="mini-stat"><label>EV · average recurring expenses</label><b id="eBills">₹33,644/mo</b></div>
           </div>
-          <p class="note">“Nominal net cost” sums expenses including upfront purchase, subtracts resale and ignores opportunity cost. “Average running bills” excludes upfront purchase, charger, resale and any loan settlement; it averages recurring operating payments, including annual renewals, over the chosen horizon.</p>
+          <p class="note">“Five-year nominal net cost” adds up all expenses and subtracts resale, without applying the 6% opportunity-cost rate. “Average recurring expenses” includes fuel or electricity, driver salary, service, insurance renewals and battery EMIs. It excludes the vehicle purchase, charger installation, resale and any final loan settlement. It is an average, not a monthly payment schedule.</p>
         </section>
 
         <section class="panel method">
@@ -339,7 +339,7 @@
     </div>
     <footer class="foot"><span>Car cost comparison · Illustrative estimates only</span><span id="scenarioStatus">Default assumptions · November 2026</span></footer>
   </main>
-  <div class="dock" role="status"><div class="d-item"><div class="dlabel">PETROL / MONTH</div><b id="dockPetrol">₹49,619</b></div><div class="divider"></div><div class="d-item"><div class="dlabel">EV / MONTH</div><b id="dockEv">₹43,301</b></div></div>
+  <div class="dock" role="status"><div class="d-item"><div class="dlabel">PETROL · FULL COST/MO</div><b id="dockPetrol">₹49,619</b></div><div class="divider"></div><div class="d-item"><div class="dlabel">EV · FULL COST/MO</div><b id="dockEv">₹43,301</b></div></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
@@ -396,8 +396,8 @@
       $('dockPetrol').textContent=money(r.mp);$('dockEv').textContent=money(r.me);
       $('petrol5yr').textContent='5-year net: '+compact(r.pNominal);
       $('ev5yr').textContent='5-year net: '+compact(r.eNominal);
-      $('petrolRun').textContent='Running: '+money(r.pRun)+'/mo';
-      $('evRun').textContent='Running: '+money(r.eRun)+'/mo';
+      $('petrolRun').textContent='Recurring: '+money(r.pRun)+'/mo';
+      $('evRun').textContent='Recurring: '+money(r.eRun)+'/mo';
       $('pNominal').textContent=compact(r.pNominal);$('eNominal').textContent=compact(r.eNominal);
       $('pBills').textContent=money(r.pRun)+'/mo';$('eBills').textContent=money(r.eRun)+'/mo';
       $('loanEMI').textContent=money(r.emi);$('loanBalance').textContent=money(r.remaining);
@@ -417,7 +417,7 @@
         const tr=document.createElement('tr');
         [label,money(x),money(y)].forEach((s,i)=>{const td=document.createElement('td');td.textContent=s;if(i>0&&((i===1?x:y)<0))td.className='negative';tr.appendChild(td);});tbody.appendChild(tr);
       });
-      const t=document.createElement('tr');t.className='total';['Total / month',money(r.mp),money(r.me)].forEach(s=>{const td=document.createElement('td');td.textContent=s;t.appendChild(td);});tbody.appendChild(t);
+      const t=document.createElement('tr');t.className='total';['Full cost / month',money(r.mp),money(r.me)].forEach(s=>{const td=document.createElement('td');td.textContent=s;t.appendChild(td);});tbody.appendChild(t);
     }
     ids.forEach(k=>inputs[k].addEventListener('input',()=>{if(isSafe(values()))render();}));
     $('resetBtn').addEventListener('click',()=>{ids.forEach(k=>inputs[k].value=defaults[k]);render();$('scenarioStatus').textContent='Default assumptions · November 2026';notify('Assumptions reset.');});
