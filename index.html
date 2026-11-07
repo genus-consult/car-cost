@@ -123,7 +123,10 @@
     .hero-foot span{border:1px solid #e0e6eb;background:#fafbfd;border-radius:6px;padding:4px 8px}
     .page-switch{display:flex;gap:20px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:60}
     .page-switch-button{border:0;background:none;padding:12px 2px 11px;color:#6b7682;font-size:13px;font-weight:580;border-bottom:2px solid transparent;min-height:44px}
-    .page-switch-button.active{color:#1c334a;border-bottom-color:#496c8d;font-weight:750}
+    /* Exactly one underline, derived from the displayed page rather than a retained button class. */
+    body[data-view="overview"] .page-switch-button[data-view-target="overview"],
+    body[data-view="assumptions"] .page-switch-button[data-view-target="assumptions"],
+    body[data-view="details"] .page-switch-button[data-view-target="details"]{color:#1c334a;border-bottom-color:#496c8d;font-weight:750}
     .main{margin-top:23px;padding-bottom:40px}
     .results{gap:12px}
     .result-card,.panel,.control-box{box-shadow:none;border-radius:13px}
@@ -185,7 +188,7 @@
     </div>
   </header>
   <nav class="page-switch shell" aria-label="Calculator pages">
-    <button type="button" class="page-switch-button active" data-view-target="overview" aria-current="page">Comparison</button>
+    <button type="button" class="page-switch-button" data-view-target="overview" aria-current="page">Comparison</button>
     <button type="button" class="page-switch-button" data-view-target="assumptions">Assumptions</button>
     <button type="button" class="page-switch-button" data-view-target="details">Details</button>
   </nav>
@@ -428,7 +431,7 @@
       document.body.dataset.view=view;
       document.querySelectorAll('.page-switch-button').forEach(button=>{
         const active=button.dataset.viewTarget===view;
-        button.classList.toggle('active',active);
+        // Styling is controlled by body[data-view] so a previous tab cannot stay highlighted.
         if(active)button.setAttribute('aria-current','page');
         else button.removeAttribute('aria-current');
       });
