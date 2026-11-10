@@ -73,3 +73,28 @@ When editing defaults:
 2. Update pre-rendered/static fallback figures in `index.html` (important for restricted iPhone file previews).
 3. Verify JS calculations and the three page views; update snapshot examples here and in [calculation-method.md](calculation-method.md).
 4. Update this document's decision history when a family decision supersedes a former assumption.
+
+
+## Revision — 10 November 2026: third template and future real-car shortlist
+
+The buyer plans to test-drive **actual cars** and collect actual dealer quotations. The original petrol and battery-financed EV calculations are now **permanent, editable templates**, rather than the only cars that can appear. A **self-charging petrol-electric hybrid template** has been added, while the petrol and EV defaults are unchanged.
+
+| Additional hybrid input | Initial editable assumption | Caveat |
+|---|---:|---|
+| `hCost` | ₹12,00,000 on road | Assumption, not a real hybrid quotation; hybrid battery included |
+| `hMileage` | 18 km/L | Illustrative combined real-world efficiency **including** electric motor assistance, not tested |
+| `hGridShare` | 0% | Percent of driving km powered by **external grid energy**, 0 for self-charging |
+| `hEfficiency` | 0.20 kWh/km | Used **only** for plug-in hybrid grid-electric kilometres |
+| `hTariff` | ₹11/kWh | Used only if external charging is nonzero |
+| `hCharger` | ₹0 upfront | Self-charging hybrid needs none; adjust for plug-in hybrid |
+| `hInsurance` | ₹15,000/year | Years 2 onward, first year included in on-road purchase |
+| `hMaintenance` | ₹10,000/year | Placeholder |
+| `hResale` | ₹5,00,000 | Hypothetical resale after five years |
+
+At the default 40 km/day, 5 years, 6% opportunity-cost rate, this hybrid template yields **~₹43,455/month** full equivalent economic cost. The other template values remain **₹49,619 petrol** and **₹43,301 EV**.
+
+New actual cars will be stored separately under [`data/cars.json`](../data/cars.json), with specific quotation-derived financial overrides, status/source details, **positives, negatives and questions**. Unquoted figures are inherited from the relevant template and labelled accordingly. This enables a decision combining economic cost with test-drive experience without assigning arbitrary scores to subjective observations.
+
+For plug-in hybrid, `hGridShare` is an approximation of kilometres powered by externally charged electricity. The remaining distance uses petrol-mode mileage and shared petrol price; charging costs use grid kWh/km, tariff and optional charger cost. For **self-charging hybrid**, electric-motor operation is already embodied in the real-world fuel economy: **do not** additionally subtract a percentage of kilometres on the theory that self-charging electric kilometres are free.
+
+See [quote intake](adding-car-quotes.md) and [test-drive decision guidance](decision-process.md).
