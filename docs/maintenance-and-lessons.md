@@ -72,3 +72,19 @@ At current defaults: petrol **₹49,619/mo**, EV **₹43,301/mo**, EV battery EM
 ## Suggested handoff for a future AI or developer
 
 > This is a public, single-page GitHub Pages car-cost calculator for a first-time car buyer in Kolkata. Read `README.md` and all files in `docs/` before editing `index.html`. Preserve a simple, understated family-facing homepage. Keep monthly full economic cost distinct from recurring expenditure. EV chassis default is ₹8L excluding the separately financed battery; the ₹5.5L/9.5%/60m battery financing is hypothetical, not a verified Kia quotation. Do not double-count battery, purchase or resale. Maintain iPhone/static-preview fallback and navigation behaviour, check the numeric regression results, and update assumptions and docs whenever defaults change.
+
+
+## Update — 10 November 2026: three templates and quote-ready shortlist
+
+- The site now contains **four** views: **Comparison**, **Shortlist**, **Assumptions**, and **Details**. The document's earlier 'three views' description is historical.
+- **Comparison** continues to show the two original template cars (petrol and battery-financed EV) **plus a hybrid petrol-electric template**. Hybrid defaults to **self-charging** at 18 km/L, 0% grid-electric kilometres, ₹12L on-road, ₹10k annual servicing and ₹5L resale. These are not actual hybrid quotes.
+- **Shortlist** reads `data/cars.json` via browser `fetch`, with no database. At creation, the list is **empty** and deliberately does not invent car names or subjective claims.
+- The JSON records support actual **petrol**, **battery-financed EV**, **outright EV**, and **hybrid** candidates, including quote identity, recorded financial overrides, positives, negatives, open questions and sources.
+- Each actual car's economic cost uses the **same `compute()`** engine as the templates. Inputs absent from a quote are **inherited assumptions**, not 'confirmed' deal terms.
+- New records must be committed to `data/cars.json` via GitHub, not typed into an inert website control. The visitor's current editable shared assumptions still affect named-car calculations on that browser.
+- **Do not put unredacted private documents into this public repository.** See [quote intake instructions](adding-car-quotes.md).
+- The four navigation tabs continue to derive their active underline from `body[data-view]`, avoiding the previous iPhone dual-underline bug. The tab strip scrolls horizontally if necessary.
+- The Details table has three template columns; on mobile it scrolls horizontally rather than squeezing values into an unreadable grid.
+- Tested via JavaScript syntax validation and a mocked browser DOM: original defaults still ₹49,619 petrol and ₹43,301 EV; hybrid ₹43,455; changing hybrid mileage recalculates; a simulated JSON with two named cars rendered distinct cards and notes; switching to `#shortlist` set exactly one active tab.
+- After making changes to the data file, reload the public site (JSON is requested with `cache: no-store`). No raw quote documents are required for the site to function.
+- On each future intake, ensure no record is falsely labelled as a **final dealer price** if its displayed monthly calculation still uses estimated mileage, resale, maintenance or financing terms.
