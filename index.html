@@ -347,13 +347,13 @@
 
   <script>
   (function(){'use strict';
-    const defaults={dailyKm:40,years:5,driver:18000,discount:6,pCost:1200000,pMileage:10,pFuel:114,pInsurance:15000,pMaintenance:10000,pResale:500000,eCost:800000,eEfficiency:0.20,eTariff:11,eCharger:75000,eInsurance:15000,eMaintenance:5000,eResale:500000,loanPrincipal:550000,loanAPR:9.5,loanMonths:60,gFuel:0,gElec:0,gDriver:0,gService:0,gInsurance:0};
+    const defaults={dailyKm:40,years:5,driver:18000,discount:6,pCost:1200000,pMileage:10,pFuel:114,pInsurance:15000,pMaintenance:10000,pResale:500000,eCost:800000,eEfficiency:0.20,eTariff:11,eCharger:75000,eInsurance:15000,eMaintenance:5000,eResale:500000,loanPrincipal:550000,loanAPR:9.5,loanMonths:60,gFuel:0,gElec:0,gDriver:0,gService:0,gInsurance:0,hCost:1200000,hMileage:18,hGridShare:0,hEfficiency:0.20,hTariff:11,hCharger:0,hInsurance:15000,hMaintenance:10000,hResale:500000};
     const ids=Object.keys(defaults), inputs=Object.fromEntries(ids.map(k=>[k,document.getElementById(k)]));
     const $=s=>document.getElementById(s);
     const money=v=> (v<0?'-':'')+'₹'+Math.abs(Math.round(v)).toLocaleString('en-IN');
     const compact=v=>{let x=Math.abs(v);return(v<0?'-':'')+(x>=10000000?'₹'+(x/10000000).toFixed(2)+' cr':x>=100000?'₹'+(x/100000).toFixed(2)+' L':money(x));};
     const values=()=>Object.fromEntries(ids.map(k=>[k,Number(inputs[k].value)]));
-    const isSafe=a=>ids.every(k=>Number.isFinite(a[k]))&&a.years>=1&&a.years<=15&&Number.isInteger(a.years)&&a.pMileage>0&&a.loanMonths>=1&&Number.isInteger(a.loanMonths)&&a.discount>=0&&a.loanAPR>=0&&ids.filter(k=>k!=='gFuel'&&k!=='gElec'&&k!=='gDriver'&&k!=='gService'&&k!=='gInsurance').every(k=>a[k]>=0)&&['gFuel','gElec','gDriver','gService','gInsurance'].every(k=>a[k]>-100);
+    const isSafe=a=>ids.every(k=>Number.isFinite(a[k]))&&a.years>=1&&a.years<=15&&Number.isInteger(a.years)&&a.pMileage>0&&a.hMileage>0&&a.hGridShare<=100&&a.loanMonths>=1&&Number.isInteger(a.loanMonths)&&a.discount>=0&&a.loanAPR>=0&&ids.filter(k=>k!=='gFuel'&&k!=='gElec'&&k!=='gDriver'&&k!=='gService'&&k!=='gInsurance').every(k=>a[k]>=0)&&['gFuel','gElec','gDriver','gService','gInsurance'].every(k=>a[k]>-100);
     const pmt=(principal,apr,months)=>{if(principal===0)return 0;const r=apr/1200;return r===0?principal/months:principal*r/(1-Math.pow(1+r,-months));};
     const loanBalance=(principal,apr,months,paid)=>{if(paid>=months)return 0;if(paid<=0)return principal;const r=apr/1200;const pay=pmt(principal,apr,months);return Math.max(0,r===0?principal-pay*paid:principal*Math.pow(1+r,paid)-pay*(Math.pow(1+r,paid)-1)/r);};
     function compute(a){
@@ -362,31 +362,31 @@
       const pv=(amount,month)=>amount/Math.pow(1+rate,month);
       const cat=['Purchase','Resale proceeds','Driver','Energy','Insurance','Maintenance','Home charger','Battery EMI','Battery loan settlement'];
       const empty=()=>Object.fromEntries(cat.map(k=>[k,{pv:0,nominal:0}]));
-      const p=empty(),e=empty();
+      const p=empty(),e=empty(),h=empty();
       function add(obj,name,amt,m){obj[name].pv+=pv(amt,m);obj[name].nominal+=amt;}
-      add(p,'Purchase',a.pCost,0);add(e,'Purchase',a.eCost,0);add(e,'Home charger',a.eCharger,0);
+      add(p,'Purchase',a.pCost,0);add(e,'Purchase',a.eCost,0);add(e,'Home charger',a.eCharger,0);add(h,'Purchase',a.hCost,0);add(h,'Home charger',a.hCharger,0);
       const emi=pmt(a.loanPrincipal,a.loanAPR,a.loanMonths);
       for(let m=1;m<=M;m++){
         const yr=Math.floor((m-1)/12), grow=(g)=>Math.pow(1+g/100,yr);
         const drivingSalary=a.driver*grow(a.gDriver);
-        add(p,'Driver',drivingSalary,m);add(e,'Driver',drivingSalary,m);
+        add(p,'Driver',drivingSalary,m);add(e,'Driver',drivingSalary,m);add(h,'Driver',drivingSalary,m);
         add(p,'Energy',d/a.pMileage*a.pFuel*grow(a.gFuel),m);
-        add(e,'Energy',d*a.eEfficiency*a.eTariff*grow(a.gElec),m);
+        add(e,'Energy',d*a.eEfficiency*a.eTariff*grow(a.gElec),m);const gridShare=a.hGridShare/100;add(h,'Energy',d*(1-gridShare)/a.hMileage*a.pFuel*grow(a.gFuel)+d*gridShare*a.hEfficiency*a.hTariff*grow(a.gElec),m);
         add(p,'Maintenance',a.pMaintenance/12*grow(a.gService),m);
-        add(e,'Maintenance',a.eMaintenance/12*grow(a.gService),m);
+        add(e,'Maintenance',a.eMaintenance/12*grow(a.gService),m);add(h,'Maintenance',a.hMaintenance/12*grow(a.gService),m);
         if(m<=a.loanMonths)add(e,'Battery EMI',emi,m);
       }
       for(let year=2;year<=a.years;year++){
         const m=(year-1)*12, grow=Math.pow(1+a.gInsurance/100,year-2);
-        add(p,'Insurance',a.pInsurance*grow,m);add(e,'Insurance',a.eInsurance*grow,m);
+        add(p,'Insurance',a.pInsurance*grow,m);add(e,'Insurance',a.eInsurance*grow,m);add(h,'Insurance',a.hInsurance*grow,m);
       }
-      add(p,'Resale proceeds',-a.pResale,M);add(e,'Resale proceeds',-a.eResale,M);
+      add(p,'Resale proceeds',-a.pResale,M);add(e,'Resale proceeds',-a.eResale,M);add(h,'Resale proceeds',-a.hResale,M);
       const remaining=loanBalance(a.loanPrincipal,a.loanAPR,a.loanMonths,Math.min(M,a.loanMonths));
       if(remaining>0)add(e,'Battery loan settlement',remaining,M);
       const sum=(obj,key)=>Object.values(obj).reduce((z,x)=>z+x[key],0);
-      const pPV=sum(p,'pv'),ePV=sum(e,'pv'),pNominal=sum(p,'nominal'),eNominal=sum(e,'nominal');
+      const pPV=sum(p,'pv'),ePV=sum(e,'pv'),hPV=sum(h,'pv'),pNominal=sum(p,'nominal'),eNominal=sum(e,'nominal'),hNominal=sum(h,'nominal');
       const running=(o)=>Object.entries(o).reduce((z,[k,v])=>z+(!['Purchase','Resale proceeds','Home charger','Battery loan settlement'].includes(k)?v.nominal:0),0)/M;
-      return {M,d,rate,denom,p,e,pvPetrol:pPV,pvEv:ePV,mp:pPV/denom,me:ePV/denom,pNominal,eNominal,pRun:running(p),eRun:running(e),emi,remaining};
+      return {M,d,rate,denom,p,e,h,pvPetrol:pPV,pvEv:ePV,pvHybrid:hPV,mp:pPV/denom,me:ePV/denom,mh:hPV/denom,pNominal,eNominal,hNominal,pRun:running(p),eRun:running(e),hRun:running(h),emi,remaining};
     }
     const rowLabels=[['Purchase','Car purchase'],['Resale proceeds','Resale proceeds (−)'],['Driver','Driver salary'],['Energy','Petrol / electricity'],['Insurance','Insurance renewals'],['Maintenance','Maintenance'],['Home charger','Home charger'],['Battery EMI','Battery loan EMIs'],['Battery loan settlement','Loan at resale']];
     let last=null,toastTimer=null;
@@ -395,32 +395,37 @@
       const a=values();if(!isSafe(a)){notify('Please enter valid numbers in the input fields.');return;}
       const r=compute(a);last=r;
       $('heroYears').textContent=a.years+'-year ownership';$('heroKm').textContent=a.dailyKm+' km daily';
-      $('petrolMonthly').textContent=money(r.mp);$('evMonthly').textContent=money(r.me);
-      $('dockPetrol').textContent=money(r.mp);$('dockEv').textContent=money(r.me);
-      $('petrol5yr').textContent='5-year net: '+compact(r.pNominal);
-      $('ev5yr').textContent='5-year net: '+compact(r.eNominal);
-      $('petrolRun').textContent='Recurring: '+money(r.pRun)+'/mo';
-      $('evRun').textContent='Recurring: '+money(r.eRun)+'/mo';
-      $('pNominal').textContent=compact(r.pNominal);$('eNominal').textContent=compact(r.eNominal);
-      $('pBills').textContent=money(r.pRun)+'/mo';$('eBills').textContent=money(r.eRun)+'/mo';
+      const kinds=[['p','petrol',r.mp],['e','ev',r.me],['h','hybrid',r.mh]];
+      kinds.forEach(([k,id,total])=>{
+        $(id+'Monthly').textContent=money(total);
+        $(id+'5yr').textContent='5-year net: '+compact(r[k+'Nominal']);
+        $(id+'Run').textContent='Recurring: '+money(r[k+'Run'])+'/mo';
+        $(k+'Bills').textContent=money(r[k+'Run'])+'/mo';
+        $(k+'Nominal').textContent=compact(r[k+'Nominal']);
+      });
+      $('dockPetrol').textContent=money(r.mp);$('dockEv').textContent=money(r.me);$('dockHybrid').textContent=money(r.mh);
       $('loanEMI').textContent=money(r.emi);$('loanBalance').textContent=money(r.remaining);
-      const max=Math.max(r.mp,r.me,1);
+      const max=Math.max(r.mp,r.me,r.mh,1);
       $('petrolBar').style.width=Math.max(0,r.mp)/max*100+'%';$('evBar').style.width=Math.max(0,r.me)/max*100+'%';
-      const lessP=r.mp<r.me-0.5,lessE=r.me<r.mp-0.5;
-      $('petrolCard').classList.toggle('cheaper',lessP);$('evCard').classList.toggle('cheaper',lessE);
-      $('petrolBest').textContent=lessP?'Lower estimate':'';$('evBest').textContent=lessE?'Lower estimate':'';
-      $('petrolBest').className=lessP?'cheaper-pill':'';$('evBest').className=lessE?'cheaper-pill':'';
-      const diff=Math.abs(r.mp-r.me);const fav=lessP?'Petrol':lessE?'EV':null;
-      $('winnerText').textContent=fav?fav+' costs '+money(diff)+' less per month':'The two cars have almost identical monthly cost';
-      $('winnerNote').textContent=fav?'Based on the current assumptions, including the cost of money invested in the car.':'Both results are within ₹1/month under the current assumptions.';
+      const ordered=[{id:'petrol',name:'Petrol',value:r.mp},{id:'ev',name:'Electric',value:r.me},{id:'hybrid',name:'Hybrid',value:r.mh}].sort((x,y)=>x.value-y.value);
+      ordered.forEach(x=>{
+        const low=x.value<ordered[0].value+0.5;
+        $(x.id+'Card').classList.toggle('cheaper',low);
+        $(x.id+'Best').textContent=low?'Lowest estimate':'';
+        $(x.id+'Best').className=low?'cheaper-pill':'';
+      });
+      $('winnerText').textContent='Lowest modelled cost: '+ordered[0].name+' · '+money(ordered[0].value)+'/month';
+      $('winnerNote').textContent='Difference from '+ordered[1].name+': '+money(ordered[1].value-ordered[0].value)+'/month. The final decision will also depend on the actual cars and test drives.';
       const tbody=$('breakdownRows');tbody.textContent='';
       rowLabels.forEach(([key,label])=>{
-        const x=r.p[key].pv/r.denom,y=r.e[key].pv/r.denom;
-        if(Math.abs(x)+Math.abs(y)<.01)return;
+        const vals=[r.p[key].pv/r.denom,r.e[key].pv/r.denom,r.h[key].pv/r.denom];
+        if(vals.every(v=>Math.abs(v)<.01))return;
         const tr=document.createElement('tr');
-        [label,money(x),money(y)].forEach((s,i)=>{const td=document.createElement('td');td.textContent=s;if(i>0&&((i===1?x:y)<0))td.className='negative';tr.appendChild(td);});tbody.appendChild(tr);
+        [label,...vals.map(v=>money(v))].forEach((value,i)=>{const td=document.createElement('td');td.textContent=value;if(i>0&&vals[i-1]<0)td.className='negative';tr.appendChild(td);});tbody.appendChild(tr);
       });
-      const t=document.createElement('tr');t.className='total';['Full cost / month',money(r.mp),money(r.me)].forEach(s=>{const td=document.createElement('td');td.textContent=s;t.appendChild(td);});tbody.appendChild(t);
+      const tr=document.createElement('tr');tr.className='total';
+      ['Full cost / month',money(r.mp),money(r.me),money(r.mh)].forEach(value=>{const td=document.createElement('td');td.textContent=value;tr.appendChild(td);});tbody.appendChild(tr);
+      if(typeof renderSavedCars==='function')renderSavedCars(a);
     }
     ids.forEach(k=>inputs[k].addEventListener('input',()=>{if(isSafe(values()))render();}));
     $('resetBtn').addEventListener('click',()=>{ids.forEach(k=>inputs[k].value=defaults[k]);render();$('scenarioStatus').textContent='Default assumptions · November 2026';notify('Assumptions reset.');});
