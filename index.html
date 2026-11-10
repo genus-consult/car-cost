@@ -125,6 +125,7 @@
     .page-switch-button{border:0;background:none;padding:12px 2px 11px;color:#6b7682;font-size:13px;font-weight:580;border-bottom:2px solid transparent;min-height:44px}
     /* Exactly one underline, derived from the displayed page rather than a retained button class. */
     body[data-view="overview"] .page-switch-button[data-view-target="overview"],
+    body[data-view="shortlist"] .page-switch-button[data-view-target="shortlist"],
     body[data-view="assumptions"] .page-switch-button[data-view-target="assumptions"],
     body[data-view="details"] .page-switch-button[data-view-target="details"]{color:#1c334a;border-bottom-color:#496c8d;font-weight:750}
     .main{margin-top:23px;padding-bottom:40px}
@@ -145,6 +146,8 @@
     .section-head{margin:0 0 18px}
     .workbench{grid-template-columns:minmax(0,850px);gap:0}
     body[data-view="overview"] .section-head,body[data-view="overview"] .workbench{display:none!important}
+    body:not([data-view="shortlist"]) .shortlist-section{display:none!important}
+    body[data-view="shortlist"] .main>section[aria-label="Comparison results"],body[data-view="shortlist"] .section-head,body[data-view="shortlist"] .workbench{display:none!important}
     body[data-view="assumptions"] .main>section[aria-label="Comparison results"],body[data-view="assumptions"] .report{display:none!important}
     body[data-view="details"] .main>section[aria-label="Comparison results"],body[data-view="details"] .section-head,body[data-view="details"] .inputs{display:none!important}
     body:not([data-view="overview"]) .hero h1,body:not([data-view="overview"]) .hero .hero-copy,body:not([data-view="overview"]) .hero .hero-foot{display:none}
@@ -190,6 +193,45 @@
       .dock b{font-size:12px}
       .dock .dlabel{font-size:9px}
     }
+
+    /* Car records: quotations and subjective notes are visually separate. */
+    .page-switch{overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+    .page-switch::-webkit-scrollbar{display:none}
+    .page-switch-button{flex-shrink:0}
+    .shortlist-section{max-width:920px;margin:0 auto}
+    .shortlist-heading h2{font-size:22px;margin:0 0 8px;letter-spacing:-.025em}
+    .shortlist-heading p,.shortlist-footer{max-width:720px;font-size:13px;line-height:1.65;color:var(--muted)}
+    .shortlist-status{font-size:12px;color:var(--muted);margin:18px 0 12px}
+    .shortlist-empty,.saved-car{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;margin:14px 0}
+    .shortlist-empty p{font-size:13px;color:var(--muted);line-height:1.65}
+    .saved-car h3{font-size:18px;margin:0;line-height:1.3}
+    .saved-car .car-meta{color:var(--muted);font-size:12px;margin:5px 0 15px}
+    .saved-car .car-cost{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:15px 0}
+    .saved-car .car-cost strong{font-size:26px;letter-spacing:-.04em}
+    .saved-car .car-cost span{color:var(--muted);font-size:12px}
+    .saved-car .car-quote{font-size:12px;color:#586778;margin:10px 0;line-height:1.6}
+    .car-notes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:17px 0}
+    .car-note-col{border:1px solid var(--line);border-radius:10px;padding:13px;min-width:0}
+    .car-note-col h4{font-size:13px;margin:0 0 8px}
+    .car-note-col ul{font-size:12px;line-height:1.65;padding-left:18px;margin:0;color:#425269}
+    .car-note-col p{margin:0;color:var(--muted);font-size:12px}
+    .car-questions{font-size:12px;line-height:1.6;margin:12px 0;color:#485a6d}
+    .car-questions b{display:block;margin-bottom:4px}
+    .car-details{border-top:1px solid var(--line);margin-top:15px}
+    .car-details summary{padding:14px 0;font-size:13px;font-weight:650}
+    .car-details .breakdown{min-width:0}
+    .car-details .breakdown td{white-space:normal}
+    .car-details .breakdown td:nth-child(2){text-align:right}
+    .car-detail-note{font-size:12px;color:var(--muted);line-height:1.6}
+    .shortlist-footer{border-top:1px solid var(--line);padding-top:14px}
+    @media(max-width:600px){
+      .page-switch{gap:19px}
+      .page-switch-button{font-size:12px}
+      .saved-car,.shortlist-empty{padding:16px}
+      .car-notes{grid-template-columns:1fr;gap:10px}
+      .saved-car .car-cost strong{font-size:24px}
+      .shortlist-heading h2{font-size:19px}
+    }
   </style>
 </head>
 <body data-view="overview">
@@ -203,6 +245,7 @@
   </header>
   <nav class="page-switch shell" aria-label="Calculator pages">
     <button type="button" class="page-switch-button" data-view-target="overview" aria-current="page">Comparison</button>
+    <button type="button" class="page-switch-button" data-view-target="shortlist">Shortlist</button>
     <button type="button" class="page-switch-button" data-view-target="assumptions">Assumptions</button>
     <button type="button" class="page-switch-button" data-view-target="details">Details</button>
   </nav>
@@ -232,11 +275,25 @@
         </article>
       </div>
       <div class="insight"><div><strong id="winnerText">Lowest modelled cost: Electric car · ₹43,301/month</strong><p id="winnerNote">Difference from the hybrid: ₹154/month. Actual quotations and test-drive impressions will also matter.</p></div></div>
-      <div class="summary-actions"><button type="button" class="btn primary" data-view-target="assumptions">Change assumptions</button><button type="button" class="btn" data-view-target="details">View cost breakdown</button></div>
+      <div class="summary-actions"><button type="button" class="btn primary" data-view-target="shortlist">See actual cars</button><button type="button" class="btn" data-view-target="assumptions">Change assumptions</button><button type="button" class="btn" data-view-target="details">View cost breakdown</button></div>
       <p class="summary-note">These are model templates rather than actual car quotations. The cost includes purchase, resale, recurring bills and the selected 6% annual opportunity rate. EV excludes its financed battery; the hybrid default needs no external charging.</p>
       <div class="preview-warning" role="note"><strong>Static file preview</strong>This preview may show estimated figures without live calculations. Open the website in your browser to change assumptions.</div>
     </section>
 
+    <section class="shortlist-section" aria-label="Actual car shortlist" id="shortlist">
+      <div class="shortlist-heading">
+        <h2>Cars we're considering</h2>
+        <p>We'll add actual cars here after collecting dealer quotations and taking test drives. Costs use the same five-year calculation as the templates, while positives and negatives remain separate for the final decision.</p>
+      </div>
+      <div id="shortlistStatus" class="shortlist-status" aria-live="polite">Checking saved cars…</div>
+      <div id="savedCars" class="saved-cars">
+        <div class="shortlist-empty">
+          <strong>No actual cars added yet</strong>
+          <p>When quotation and test-drive details are available, each car will have its own cost estimate, price and source information, positives, negatives and open questions. The three model templates above will stay unchanged.</p>
+        </div>
+      </div>
+      <p class="shortlist-footer">Costs are estimates, not final offers. Comfort, reliability, warranty, driving experience and other personal preferences should be considered alongside the financial comparison.</p>
+    </section>
     <div class="section-head">
       <div><h2>Assumptions</h2><p>Change any figure. The comparison updates automatically.</p></div>
       <div class="toolbar">
@@ -468,7 +525,7 @@
     function decode(s){const arr=JSON.parse(atob(s.replace(/-/g,'+').replace(/_/g,'/')));if(!Array.isArray(arr)||arr.length!==ids.length)throw Error('Invalid');const obj=Object.fromEntries(ids.map((k,i)=>[k,Number(arr[i])]));if(!isSafe(obj))throw Error('Invalid');return obj;}
     function restoreUrl(){try{const q=new URLSearchParams(location.search).get('s');if(q){const a=decode(q);ids.forEach(k=>inputs[k].value=a[k]);$('scenarioStatus').textContent='Shared scenario';}}catch(err){notify('This shared link was invalid. Showing defaults.');}}
     function selectPage(name,scrollToTop){
-      const view=['overview','assumptions','details'].includes(name)?name:'overview';
+      const view=['overview','shortlist','assumptions','details'].includes(name)?name:'overview';
       document.body.dataset.view=view;
       document.querySelectorAll('.page-switch-button').forEach(button=>{
         const active=button.dataset.viewTarget===view;
