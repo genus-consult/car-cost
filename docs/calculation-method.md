@@ -156,3 +156,26 @@ The fact that regular identical monthly costs display the *same amount* at 6% **
 - Annual energy-price and salary escalation defaults are **0%**; the 6% rate is treated as a nominal/effective annual alternative return, not a guarantee or an after-tax yield. Tax on investment returns, inflation uncertainty and lender fees are not explicitly modelled.
 - The battery-financing schedule uses **loan APR** to set contractual EMIs and the separate **opportunity rate** for valuation, which is intentional.
 - No changes to the calculator formulas were warranted from this audit.
+
+
+## 10 November 2026 extension — hybrid model and quoted-car reuse
+
+A **third `h` cash-flow object** is now constructed inside the same `compute(a)` function as the existing petrol `p` and EV `e`. Each hybrid cash flow uses the **same discount function**, annuity denominator and ownership horizon. The hybrid includes purchase at month 0, possible charger at month 0, driver/energy/maintenance each month, Years 2+ annual insurance at renewal timing, and gross resale at month M. The standard hybrid template assumes **no separate battery loan**, because its battery is included in vehicle price.
+
+```text
+grid_share = hGridShare / 100    // 0 ... 1
+monthly_distance = dailyKm * 365 / 12
+hybrid_monthly_energy_cost =
+  monthly_distance * (1-grid_share) / hMileage * petrol_price * fuel_escalation
+  + monthly_distance * grid_share * hEfficiency * hTariff * electricity_escalation
+
+hybrid_full_monthly_cost = PV(all hybrid cash flows) / same_monthly_annuity_factor
+```
+
+**Interpretation:** `grid_share=0` represents a *self-charging* petrol-electric hybrid. Its real-world `hMileage` must already incorporate electric motor assistance. `grid_share>0` is an **approximate plug-in hybrid** case: only grid-charged distance pays electricity bills, and remaining distance uses petrol-mode mileage. A plug-in hybrid with poor charge discipline can be represented by reducing grid share. Do not confuse motor-electric driving in a self-charging hybrid with electricity bought from CESC.
+
+**New default regression:** hybrid full economic cost **~₹43,455/month** at 6%, **~₹39,140/month** at 0%, with 18 km/L and no grid charging. (See checked model output for the precise 0% value before treating this approximation as a formal snapshot.) The existing petrol and EV checks remain intact.
+
+**Named cars:** shortlist records are stored in `data/cars.json`. The app overlays allowed, vehicle-specific `overrides` onto the current editable shared defaults and calls the exact same `compute(a)` function. Powertrain selects the appropriate branch: petrol→`p`; battery-financed EV / outright EV→`e`; hybrid→`h`. Outright EV forces battery loan principal to zero, since that vehicle price includes the battery. A missing vehicle-specific input is **not treated as a quotation**: it inherits the generic template input. The app explicitly displays this inherited-estimate caveat.
+
+The discount mechanism itself has **not been changed** by the addition of hybrid and named cars.
