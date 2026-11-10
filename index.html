@@ -482,7 +482,7 @@
       return {M,d,rate,denom,p,e,h,pvPetrol:pPV,pvEv:ePV,pvHybrid:hPV,mp:pPV/denom,me:ePV/denom,mh:hPV/denom,pNominal,eNominal,hNominal,pRun:running(p),eRun:running(e),hRun:running(h),emi,remaining};
     }
     const rowLabels=[['Purchase','Car purchase'],['Resale proceeds','Resale proceeds (−)'],['Driver','Driver salary'],['Energy','Petrol / electricity'],['Insurance','Insurance renewals'],['Maintenance','Maintenance'],['Home charger','Home charger'],['Battery EMI','Battery loan EMIs'],['Battery loan settlement','Loan at resale']];
-    let last=null,toastTimer=null;
+    let last=null,toastTimer=null,savedCarRecords=[];
     function notify(msg){const el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3600);}
     function render(){
       const a=values();if(!isSafe(a)){notify('Please enter valid numbers in the input fields.');return;}
@@ -520,6 +520,121 @@
       ['Full cost / month',money(r.mp),money(r.me),money(r.mh)].forEach(value=>{const td=document.createElement('td');td.textContent=value;tr.appendChild(td);});tbody.appendChild(tr);
       if(typeof renderSavedCars==='function')renderSavedCars(a);
     }
+
+    /* Named cars are stored separately in public data/cars.json. No personal quotation files are uploaded automatically. */
+    const carKinds={
+      petrol:{prefix:'p',label:'Petrol',priceKey:'pCost',allow:['pCost','pMileage','pInsurance','pMaintenance','pResale']},
+      'ev-baas':{prefix:'e',label:'Battery-financed EV',priceKey:'eCost',allow:['eCost','eEfficiency','eTariff','eCharger','eInsurance','eMaintenance','eResale','loanPrincipal','loanAPR','loanMonths']},
+      'ev-outright':{prefix:'e',label:'Electric · battery included',priceKey:'eCost',allow:['eCost','eEfficiency','eTariff','eCharger','eInsurance','eMaintenance','eResale']},
+      hybrid:{prefix:'h',label:'Petrol-electric hybrid',priceKey:'hCost',allow:['hCost','hMileage','hGridShare','hEfficiency','hTariff','hCharger','hInsurance','hMaintenance','hResale']}
+    };
+    const addText=(parent,tag,className,content)=>{
+      const node=document.createElement(tag);
+      if(className)node.className=className;
+      if(content!==undefined)node.textContent=String(content);
+      parent.appendChild(node);
+      return node;
+    };
+    function renderSavedCars(shared){
+      const host=$('savedCars');
+      if(!host)return;
+      host.textContent='';
+      const count=savedCarRecords.length;
+      $('shortlistStatus').textContent=count?count+' actual car'+(count===1?'':'s')+' on the shortlist · values use your current shared assumptions':'No actual quotations or test-drive records added yet';
+      if(!count){
+        const empty=addText(host,'div','shortlist-empty');
+        addText(empty,'strong','', 'No specific cars added yet');
+        addText(empty,'p','',"After you send a quotation or test-drive notes, we'll save the car here with its economics, positive points, negative points and open questions. The three generic templates remain on the Comparison page.");
+        return;
+      }
+      const groupLabels={'Purchase':'Car purchase','Resale proceeds':'Resale proceeds (−)','Driver':'Driver salary','Energy':'Petrol / electricity','Insurance':'Insurance renewals','Maintenance':'Maintenance','Home charger':'Home charger','Battery EMI':'Battery loan EMIs','Battery loan settlement':'Loan settlement at resale'};
+      savedCarRecords.forEach(record=>{
+        const type=carKinds[record.powertrain];if(!type)return;
+        const a={...shared};
+        if(record.powertrain==='ev-outright'){a.loanPrincipal=0;a.loanAPR=0;a.loanMonths=60;}
+        const changes={};
+        if(record.overrides&&typeof record.overrides==='object'&&!Array.isArray(record.overrides)){
+          type.allow.forEach(key=>{
+            if(Object.prototype.hasOwnProperty.call(record.overrides,key)){
+              const v=record.overrides[key];
+              if(typeof v==='number'&&Number.isFinite(v)){a[key]=v;changes[key]=v;}
+            }
+          });
+        }
+        const card=addText(host,'article','saved-car');
+        addText(card,'h3','',record.name || 'Unnamed car');
+        const meta=[record.variant,type.label,record.status].filter(x=>typeof x==='string'&&x.trim()).join(' · ');
+        addText(card,'div','car-meta',meta);
+        if(!isSafe(a)){
+          addText(card,'p','car-detail-note','This record contains an invalid financial input. Please check its stored values.');
+          return;
+        }
+        const calc=compute(a),kind=type.prefix;
+        const cost=kind==='p'?calc.mp:kind==='e'?calc.me:calc.mh;
+        const moneyLine=addText(card,'div','car-cost');
+        addText(moneyLine,'strong','',money(cost));
+        addText(moneyLine,'span','', 'full economic ownership cost / month · '+a.years+'-year model');
+        const priceQuoted=Object.prototype.hasOwnProperty.call(changes,type.priceKey);
+        const usingTemplate=type.allow.length-Object.keys(changes).length;
+        addText(card,'p','car-quote',
+          (priceQuoted?'Recorded vehicle purchase input: '+money(changes[type.priceKey])+'. ':'Vehicle price uses the generic template assumption; quotation pending. ')+
+          Object.keys(changes).length+' vehicle-specific financial input(s) saved; '+usingTemplate+' other vehicle-specific inputs still use template values. Shared distance, driver, discount and fuel prices are taken from the Assumptions tab.');
+        if(record.quote&&typeof record.quote==='object'){
+          const q=record.quote;
+          const parts=[q.dealer,q.city,q.date,q.reference].filter(v=>typeof v==='string'&&v.trim());
+          if(parts.length)addText(card,'p','car-quote','Quote reference: '+parts.join(' · '));
+          if(q.inclusions)addText(card,'p','car-quote','Quotation inclusions: '+q.inclusions);
+          if(q.notes)addText(card,'p','car-quote','Quote notes: '+q.notes);
+        }
+        if(record.notes)addText(card,'p','car-quote',record.notes);
+        const notes=addText(card,'div','car-notes');
+        const noteColumn=(heading,entries)=>{
+          const col=addText(notes,'div','car-note-col');
+          addText(col,'h4','',heading);
+          if(Array.isArray(entries)&&entries.length){
+            const ul=addText(col,'ul');
+            entries.filter(x=>typeof x==='string'&&x.trim()).forEach(item=>addText(ul,'li','',item));
+          } else addText(col,'p','','Not recorded yet.');
+        };
+        noteColumn('Positive points',record.pros);
+        noteColumn('Negative points',record.cons);
+        if(Array.isArray(record.questions)&&record.questions.length){
+          const box=addText(card,'div','car-questions');
+          addText(box,'b','','Questions to resolve');
+          const ul=addText(box,'ul');
+          record.questions.filter(x=>typeof x==='string'&&x.trim()).forEach(item=>addText(ul,'li','',item));
+        }
+        const details=addText(card,'details','car-details');
+        addText(details,'summary','','Show cost breakdown and recorded inputs');
+        const table=addText(details,'table','breakdown');
+        const tbody=addText(table,'tbody');
+        Object.entries(groupLabels).forEach(([key,label])=>{
+          const val=calc[kind][key].pv/calc.denom;
+          if(Math.abs(val)<.01)return;
+          const tr=addText(tbody,'tr');
+          addText(tr,'td','',label);
+          addText(tr,'td','',money(val));
+        });
+        const tr=addText(tbody,'tr','total');addText(tr,'td','','Full cost / month');addText(tr,'td','',money(cost));
+        const inputs=Object.entries(changes).map(([key,val])=>key+': '+val).join(' · ');
+        addText(details,'p','car-detail-note','Recorded vehicle-specific model inputs: '+(inputs||'None yet; all values are still generic template assumptions.')+'. Unquoted values remain provisional and editable in the main template.');
+      });
+    }
+    async function loadSavedCars(){
+      try{
+        const response=await fetch('./data/cars.json',{cache:'no-store'});
+        if(!response.ok)throw Error('HTTP '+response.status);
+        const data=await response.json();
+        if(data.schemaVersion!==1||!Array.isArray(data.cars))throw Error('Unsupported car data');
+        savedCarRecords=data.cars.filter(car=>car&&typeof car==='object'&&carKinds[car.powertrain]&&typeof car.name==='string');
+        renderSavedCars(values());
+      }catch(err){
+        $('shortlistStatus').textContent='Saved cars could not be loaded';
+        const host=$('savedCars');host.textContent='';
+        addText(host,'p','car-detail-note','The saved shortlist is temporarily unavailable. Reload the website, or check that data/cars.json exists in the GitHub repository.');
+      }
+    }
+
     ids.forEach(k=>inputs[k].addEventListener('input',()=>{if(isSafe(values()))render();}));
     $('resetBtn').addEventListener('click',()=>{ids.forEach(k=>inputs[k].value=defaults[k]);render();$('scenarioStatus').textContent='Default assumptions · November 2026';notify('Assumptions reset.');});
     function decode(s){const arr=JSON.parse(atob(s.replace(/-/g,'+').replace(/_/g,'/')));if(!Array.isArray(arr)||arr.length!==ids.length)throw Error('Invalid');const obj=Object.fromEntries(ids.map((k,i)=>[k,Number(arr[i])]));if(!isSafe(obj))throw Error('Invalid');return obj;}
@@ -542,7 +657,7 @@
     }));
     window.addEventListener('hashchange',()=>selectPage(location.hash.slice(1),true));
     selectPage(location.hash.slice(1),false);
-    restoreUrl();render();document.documentElement.classList.add('js-active');
+    restoreUrl();render();document.documentElement.classList.add('js-active');loadSavedCars();
   })();
   </script>
 </body>
