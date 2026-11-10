@@ -176,13 +176,27 @@
       .section-head{margin:0 0 13px}
     }
   
+
+    .results{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .result-card.hybrid .label-dot{background:#a87830}
+    .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+    .breakdown{min-width:495px}
+    @media(max-width:650px){
+      .results{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .result-card.hybrid{grid-column:1/-1;display:grid;grid-template-columns:1fr auto;gap:5px 10px;align-items:center}
+      .result-card.hybrid .r-top{grid-column:1;grid-row:1}
+      .result-card.hybrid .money{grid-column:2;grid-row:1;margin-top:0}
+      .result-card.hybrid .permonth,.result-card.hybrid .result-sub{grid-column:1/-1}
+      .dock b{font-size:12px}
+      .dock .dlabel{font-size:9px}
+    }
   </style>
 </head>
 <body data-view="overview">
   <header class="hero">
     <div class="shell">
       <div class="topnav"><div class="brand">Car cost comparison</div><span class="tag">Family estimate</span></div>
-      <h1>Petrol and electric car costs</h1>
+      <h1>Petrol, electric and hybrid car costs</h1>
       <p class="hero-copy">An estimate of monthly ownership costs over five years. Change any assumption to compare different situations.</p>
       <div class="hero-foot"><span id="heroYears">5-year ownership</span><span id="heroKm">40 km daily</span></div>
     </div>
@@ -203,17 +217,23 @@
           <div class="bar-bg"><div class="bar" id="petrolBar" style="width:100%"></div></div>
           <div class="result-sub"><span id="petrol5yr">5-year net: ₹27.22 L</span><span id="petrolRun">Running: ₹33,703/mo</span></div>
         </article>
-        <article class="result-card ev cheaper" id="evCard">
-          <div class="r-top"><span><i class="label-dot"></i>Electric car</span><span id="evBest" class="cheaper-pill">Lower estimate</span></div>
+        <article class="result-card ev" id="evCard">
+          <div class="r-top"><span><i class="label-dot"></i>Electric car</span><span id="evBest"></span></div>
           <div class="money" id="evMonthly">₹43,301</div>
           <div class="permonth">full ownership cost / month</div>
           <div class="bar-bg"><div class="bar" id="evBar" style="width:87.27%"></div></div>
           <div class="result-sub"><span id="ev5yr">5-year net: ₹23.94 L</span><span id="evRun">Running: ₹33,644/mo</span></div>
         </article>
+        <article class="result-card hybrid" id="hybridCard">
+          <div class="r-top"><span><i class="label-dot"></i>Hybrid car</span><span id="hybridBest"></span></div>
+          <div class="money" id="hybridMonthly">₹43,455</div>
+          <div class="permonth">full ownership cost / month</div>
+          <div class="result-sub"><span id="hybrid5yr">5-year net: ₹23.52 L</span><span id="hybridRun">Recurring: ₹27,539/mo</span></div>
+        </article>
       </div>
-      <div class="insight"><div><strong id="winnerText">Electric car costs ₹6,318 less per month</strong><p id="winnerNote">Based on the current assumptions, including the cost of money invested in the car.</p></div></div>
+      <div class="insight"><div><strong id="winnerText">Lowest modelled cost: Electric car · ₹43,301/month</strong><p id="winnerNote">Difference from the hybrid: ₹154/month. Actual quotations and test-drive impressions will also matter.</p></div></div>
       <div class="summary-actions"><button type="button" class="btn primary" data-view-target="assumptions">Change assumptions</button><button type="button" class="btn" data-view-target="details">View cost breakdown</button></div>
-      <p class="summary-note">These are full monthly ownership costs, not just monthly bills. They include the net purchase-and-resale cost, running expenses and a 6% annual opportunity-cost assumption. The EV purchase price excludes its separately financed battery.</p>
+      <p class="summary-note">These are model templates rather than actual car quotations. The cost includes purchase, resale, recurring bills and the selected 6% annual opportunity rate. EV excludes its financed battery; the hybrid default needs no external charging.</p>
       <div class="preview-warning" role="note"><strong>Static file preview</strong>This preview may show estimated figures without live calculations. Open the website in your browser to change assumptions.</div>
     </section>
 
@@ -262,7 +282,23 @@
         </details>
 
         <details class="control-box">
-          <summary><span class="sum-title"><span class="num">04</span> EV battery financing</span><span class="chev">+</span></summary>
+          <summary><span class="sum-title"><span class="num">04</span> Petrol-electric hybrid</span><span class="chev">+</span></summary>
+          <div class="controls">
+            <p class="note">Default: self-charging hybrid. The 18 km/L estimate includes the electric motor's contribution. It needs no external charging. For plug-in hybrids, enter the share of kilometres powered by grid electricity.</p>
+            <div class="input-row"><label for="hCost"><span class="input-title">On-road purchase price</span><span class="input-hint">Hybrid battery included · Year 1 insurance included</span></label><div class="numfield"><span class="unit">₹</span><input id="hCost" type="number" min="0" step="10000" value="1200000"></div></div>
+            <div class="input-row"><label for="hMileage"><span class="input-title">Petrol mileage</span><span class="input-hint">km/L, including electric assistance for a self-charging hybrid</span></label><div class="numfield"><input id="hMileage" type="number" min="0.1" step="0.5" value="18"><span class="unit" style="padding-right:8px">km/L</span></div></div>
+            <div class="input-row"><label for="hGridShare"><span class="input-title">Grid-electric driving</span><span class="input-hint">% of km. Keep at 0 for self-charging hybrid</span></label><div class="numfield"><input id="hGridShare" type="number" min="0" max="100" step="5" value="0"><span class="unit" style="padding-right:8px">%</span></div></div>
+            <div class="input-row"><label for="hEfficiency"><span class="input-title">Grid-electric consumption</span><span class="input-hint">kWh/km at wall, only if grid-electric share &gt; 0%</span></label><div class="numfield"><input id="hEfficiency" type="number" min="0" step="0.01" value="0.20"><span class="unit" style="padding-right:8px">kWh/km</span></div></div>
+            <div class="input-row"><label for="hTariff"><span class="input-title">Electricity price</span><span class="input-hint">₹ per kWh for plug-in hybrids</span></label><div class="numfield"><span class="unit">₹</span><input id="hTariff" type="number" min="0" step="0.5" value="11"></div></div>
+            <div class="input-row"><label for="hCharger"><span class="input-title">Charger and installation</span><span class="input-hint">One-time, 0 for self-charging hybrid</span></label><div class="numfield"><span class="unit">₹</span><input id="hCharger" type="number" min="0" step="5000" value="0"></div></div>
+            <div class="input-row"><label for="hInsurance"><span class="input-title">Insurance renewals</span><span class="input-hint">₹/year, Years 2 onward</span></label><div class="numfield"><span class="unit">₹</span><input id="hInsurance" type="number" min="0" step="1000" value="15000"></div></div>
+            <div class="input-row"><label for="hMaintenance"><span class="input-title">Maintenance and servicing</span><span class="input-hint">₹/year</span></label><div class="numfield"><span class="unit">₹</span><input id="hMaintenance" type="number" min="0" step="1000" value="10000"></div></div>
+            <div class="input-row"><label for="hResale"><span class="input-title">Resale proceeds</span><span class="input-hint">At end of ownership period</span></label><div class="numfield"><span class="unit">₹</span><input id="hResale" type="number" min="0" step="10000" value="500000"></div></div>
+          </div>
+        </details>
+
+        <details class="control-box">
+          <summary><span class="sum-title"><span class="num">05</span> EV battery financing</span><span class="chev">+</span></summary>
           <div class="controls">
             <div class="input-row"><label for="loanPrincipal"><span class="input-title">Battery loan principal</span><span class="input-hint">Financed separately · no upfront battery payment assumed</span></label><div class="numfield"><span class="unit">₹</span><input id="loanPrincipal" type="number" min="0" step="10000" value="550000"></div></div>
             <div class="input-row"><label for="loanAPR"><span class="input-title">Battery loan interest</span><span class="input-hint">Annual nominal rate, monthly reducing balance</span></label><div class="numfield"><input id="loanAPR" type="number" min="0" max="100" step="0.1" value="9.5"><span class="unit" style="padding:0 10px 0 0">%</span></div></div>
@@ -276,7 +312,7 @@
         </details>
 
         <details class="control-box">
-          <summary><span class="sum-title"><span class="num">05</span> Advanced · annual price increases</span><span class="chev">+</span></summary>
+          <summary><span class="sum-title"><span class="num">06</span> Advanced · annual price increases</span><span class="chev">+</span></summary>
           <div class="controls">
             <p class="note">All are 0% by agreement. If adjusted, prices increase once per ownership year (driver salary and service costs beginning Year 2; insurance from Year 3 because Year 2 is the first separately paid premium).</p>
             <div class="input-row"><label for="gFuel"><span class="input-title">Petrol price increase</span><span class="input-hint">Per year</span></label><div class="numfield"><input id="gFuel" type="number" min="-50" max="100" step="0.5" value="0"><span class="unit" style="padding:0 10px 0 0">%</span></div></div>
@@ -292,10 +328,10 @@
         <section class="panel">
           <h3>Full ownership cost per month</h3>
           <p class="small">Includes the cost of buying the car, its resale value and the money tied up in it, as well as day-to-day expenses. It is not the amount you pay out of pocket every month.</p>
-          <table class="breakdown" aria-label="Monthly equivalent cost components">
-            <thead><tr><th scope="col">Component</th><th scope="col">Petrol</th><th scope="col">EV</th></tr></thead>
-            <tbody id="breakdownRows"><tr><td>Car purchase</td><td>₹23,111</td><td>₹15,407</td></tr><tr><td>Resale proceeds (−)</td><td class="negative">-₹7,196</td><td class="negative">-₹7,196</td></tr><tr><td>Driver salary</td><td>₹18,000</td><td>₹18,000</td></tr><tr><td>Petrol / electricity</td><td>₹13,870</td><td>₹2,677</td></tr><tr><td>Insurance renewals</td><td>₹1,001</td><td>₹1,001</td></tr><tr><td>Maintenance</td><td>₹833</td><td>₹417</td></tr><tr><td>Home charger</td><td>₹0</td><td>₹1,444</td></tr><tr><td>Battery loan EMIs</td><td>₹0</td><td>₹11,551</td></tr><tr class="total"><td>Full cost / month</td><td>₹49,619</td><td>₹43,301</td></tr></tbody>
-          </table>
+          <div class="table-scroll"><table class="breakdown" aria-label="Monthly equivalent cost components">
+            <thead><tr><th scope="col">Component</th><th scope="col">Petrol</th><th scope="col">EV</th><th scope="col">Hybrid</th></tr></thead>
+            <tbody id="breakdownRows"><tr><td>Car purchase</td><td>₹23,111</td><td>₹15,407</td><td>₹23,111</td></tr><tr><td>Resale proceeds (−)</td><td>-₹7,196</td><td>-₹7,196</td><td>-₹7,196</td></tr><tr><td>Driver salary</td><td>₹18,000</td><td>₹18,000</td><td>₹18,000</td></tr><tr><td>Petrol / electricity</td><td>₹13,870</td><td>₹2,677</td><td>₹7,706</td></tr><tr><td>Insurance renewals</td><td>₹1,001</td><td>₹1,001</td><td>₹1,001</td></tr><tr><td>Maintenance</td><td>₹833</td><td>₹417</td><td>₹833</td></tr><tr><td>Home charger</td><td>₹0</td><td>₹1,444</td><td>₹0</td></tr><tr><td>Battery loan EMIs</td><td>₹0</td><td>₹11,551</td><td>₹0</td></tr><tr class="total"><td>Full cost / month</td><td>₹49,619</td><td>₹43,301</td><td>₹43,455</td></tr></tbody>
+          </table></div>
           <p class="note">Figures are rounded for display; totals use full-precision values. Purchase and resale are not double-counted as depreciation.</p>
         </section>
 
@@ -304,9 +340,9 @@
           <p class="small">Recurring expenses are averaged over 60 months. Full ownership costs also include the net cost of buying and later selling the car, adjusted for the 6% opportunity-cost assumption.</p>
           <div class="mini-stat-grid">
             <div class="mini-stat"><label>Petrol · nominal net cost</label><b id="pNominal">₹27.22 L</b></div>
-            <div class="mini-stat"><label>EV · nominal net cost</label><b id="eNominal">₹23.94 L</b></div>
+            <div class="mini-stat"><label>EV · nominal net cost</label><b id="eNominal">₹23.94 L</b></div><div class="mini-stat"><label>Hybrid · nominal net cost</label><b id="hNominal">₹23.52 L</b></div>
             <div class="mini-stat"><label>Petrol · average recurring expenses</label><b id="pBills">₹33,703/mo</b></div>
-            <div class="mini-stat"><label>EV · average recurring expenses</label><b id="eBills">₹33,644/mo</b></div>
+            <div class="mini-stat"><label>EV · average recurring expenses</label><b id="eBills">₹33,644/mo</b></div><div class="mini-stat"><label>Hybrid · average recurring expenses</label><b id="hBills">₹27,539/mo</b></div>
           </div>
           <p class="note">“Five-year nominal net cost” adds up all expenses and subtracts resale, without applying the 6% opportunity-cost rate. “Average recurring expenses” includes fuel or electricity, driver salary, service, insurance renewals and battery EMIs. It excludes the vehicle purchase, charger installation, resale and any final loan settlement. It is an average, not a monthly payment schedule.</p>
         </section>
@@ -327,7 +363,7 @@
           <p>The EMI is paid only while the loan is active. If the ownership period ends before the loan, the outstanding balance is settled at sale and added to cost. If it ends afterward, EMI payments stop once the loan is repaid.</p>
           <div class="subheads">Assumptions & source notes</div>
           <ul>
-            <li>The petrol purchase price is assumed at ₹12 lakh on road and the EV at ₹8 lakh on road. The EV price <strong>excludes the separately financed battery</strong>, while EV resale includes the battery.</li>
+            <li>The petrol and self-charging hybrid purchase prices are assumed at ₹12 lakh on road, EV at ₹8 lakh excluding its separately financed battery. The hybrid purchase price includes its battery; the EV resale includes its battery.</li>
             <li>Year 1 insurance is inside each purchase price. ₹15,000 renewal is paid for Years 2 onward. No insurance is charged twice.</li>
             <li>365 days/year; monthly running is the annual distance divided by 12. Consumption at the wall includes charging losses.</li>
             <li>Driver cost is identical for both, but included in the full cost of ownership.</li>
@@ -342,7 +378,7 @@
     </div>
     <footer class="foot"><span>Car cost comparison · Illustrative estimates only</span><span id="scenarioStatus">Default assumptions · November 2026</span></footer>
   </main>
-  <div class="dock" role="status"><div class="d-item"><div class="dlabel">PETROL · FULL COST/MO</div><b id="dockPetrol">₹49,619</b></div><div class="divider"></div><div class="d-item"><div class="dlabel">EV · FULL COST/MO</div><b id="dockEv">₹43,301</b></div></div>
+  <div class="dock" role="status"><div class="d-item"><div class="dlabel">PETROL · ₹/MO</div><b id="dockPetrol">₹49,619</b></div><div class="divider"></div><div class="d-item"><div class="dlabel">EV · ₹/MO</div><b id="dockEv">₹43,301</b></div><div class="divider"></div><div class="d-item"><div class="dlabel">HYBRID · ₹/MO</div><b id="dockHybrid">₹43,455</b></div></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
