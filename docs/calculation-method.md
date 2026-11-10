@@ -113,3 +113,46 @@ A useful regression check: with **only** `eTariff` changed from ₹11 to **₹6.
 - A 6% discount rate is a *choice*; 0% is also valid if the user wants a simple nominal expenditure comparison.
 - The default EV battery loan has a higher 9.5% lending rate: that is an actual assumed borrowing cost, distinct from the 6% opportunity rate.
 - This model is intentionally deterministic. Sensitivity to distance, consumption, battery loan terms, tariff, resale and vehicle price should be explored before using it for a purchase decision.
+
+
+## Independent opportunity-cost audit — 10 November 2026
+
+**Result:** reviewed the current `index.html` `compute(a)` calculation, then independently recalculated each default cash-flow category. **No incorrect application or omission of the annual 6% rate was found in the *full equivalent monthly economic cost*.** The secondary `nominal net cost` and `average recurring expenses` are intentionally **not** discounted.
+
+Every cash flow enters through `add(obj, name, amount, month)`, which saves **both** (a) its unadjusted nominal amount and (b) its present value using `amount/(1+monthly_rate)^month`. The per-category PV values are summed and divided by the **same 60-month annuity factor** to obtain full economic monthly cost. The sole t=0 purchases (and EV charger) have PV equal to their nominal value, but their conversion to a monthly equivalent **does** reflect opportunity cost.
+
+The audit independently recreated the following component effects using current defaults, before per-row rounding:
+
+| Component | Equivalent ₹/month at 0% | Equivalent ₹/month at 6% | Why |
+|---|---:|---:|---|
+| Petrol vehicle purchase (₹12L at t=0) | 20,000.00 | 23,110.78 | Upfront capital incurs opportunity cost |
+| EV vehicle purchase (₹8L at t=0) | 13,333.33 | 15,407.19 | Same principle |
+| Resale proceeds (₹5L in month 60, both) | −8,333.33 | −7,195.72 | Future receipts have a lower present value |
+| Driver salary (₹18k each month, both) | 18,000.00 | 18,000.00 | Discounting and level-payment conversion **exactly cancel** |
+| Petrol (₹13,870 each month) | 13,870.00 | 13,870.00 | Same cancellation |
+| EV electricity (₹2,676.67 each month) | 2,676.67 | 2,676.67 | Same cancellation |
+| Petrol maintenance (₹833.33/month) | 833.33 | 833.33 | Same cancellation |
+| Insurance (₹15k in months 12,24,36,48) | 1,000.00 | 1,001.02 | Periodic renewal timing differs from an equal monthly stream |
+| EV charger (₹75k at t=0) | 1,250.00 | 1,444.42 | Upfront investment |
+| Battery EMI (₹11,551.02 monthly, all 60 months) | 11,551.02 | 11,551.02 | Same cancellation; **the EMI itself** separately reflects 9.5% loan interest |
+
+The independently calculated **full totals** were:
+
+- **Petrol:** 0% = ₹45,370.00/mo; 6% = ₹49,619.41/mo.
+- **EV:** 0% = ₹39,894.36/mo; 6% = ₹43,301.27/mo.
+
+The fact that regular identical monthly costs display the *same amount* at 6% **does not mean they were excluded**: their PVs decrease, but the denominator used to turn PV into level monthly cost decreases proportionately.
+
+### Checks beyond the default scenario
+
+1. **Non-flat running cost:** increasing petrol prices by 5% after each year makes the petrol expense's equivalent monthly cost **₹15,328.10 at 0%** and **₹15,241.25 at 6%**, demonstrating that the opportunity rate affects running costs when their amounts change over time.
+2. **Battery debt beyond car ownership:** with a hypothetical **96-month ₹5.5L loan at 9.5%**, 60 months of battery EMIs and the **~₹2.56L remaining balance paid at month 60** are both included; the settlement is discounted at the opportunity rate just like resale.
+3. **0% rate:** every PV factor correctly becomes 1 and the annuity factor becomes 60, while the battery's **9.5% loan rate remains unchanged**.
+
+### Modelling limitations, not discounting defects
+
+- Maintenance is assumed paid as equal month-end instalments, even if real servicing is periodic.
+- Recurring energy and driver costs are assumed at month-end. Annual insurance is prepaid at months 12/24/36/48, representing the starts of Years 2–5.
+- Annual energy-price and salary escalation defaults are **0%**; the 6% rate is treated as a nominal/effective annual alternative return, not a guarantee or an after-tax yield. Tax on investment returns, inflation uncertainty and lender fees are not explicitly modelled.
+- The battery-financing schedule uses **loan APR** to set contractual EMIs and the separate **opportunity rate** for valuation, which is intentional.
+- No changes to the calculator formulas were warranted from this audit.
