@@ -50,7 +50,7 @@ The site expects a root JSON object:
 }
 ```
 
-Use `powertrain` **`petrol`**, **`ev-baas`**, or **`hybrid`**. Use `status` such as **Research**, **Quoted**, **Test driven**, **Shortlisted**, or **Rejected**; they are descriptive and do not affect the economic formula.
+Use `powertrain` **`petrol`**, **`ev-baas`**, **`ev-outright`** (battery included in vehicle price), or **`hybrid`**. Use `status` such as **Research**, **Quoted**, **Test driven**, **Shortlisted**, or **Rejected**; they are descriptive and do not affect the economic formula.
 
 **Important:** The JSON example above is a *schema illustration only*, not a real quote or the current car list.
 
