@@ -60,6 +60,7 @@ Use *only* relevant input keys, with their same meanings and units as `index.htm
 
 - **petrol:** `pCost`, `pMileage`, `pInsurance`, `pMaintenance`, `pResale`.
 - **ev-baas:** `eCost`, `eEfficiency`, `eTariff`, `eCharger`, `eInsurance`, `eMaintenance`, `eResale`, `loanPrincipal`, `loanAPR`, `loanMonths`.
+- **ev-outright:** `eCost`, `eEfficiency`, `eTariff`, `eCharger`, `eInsurance`, `eMaintenance`, `eResale`. The battery is included in `eCost` and the separate battery-loan balance is forced to zero.
 - **hybrid:** `hCost`, `hMileage`, `hGridShare`, `hEfficiency`, `hTariff`, `hCharger`, `hInsurance`, `hMaintenance`, `hResale`.
 
 The family-wide assumptions (e.g. `dailyKm`, `driver`, `discount`, `years`, `pFuel`) remain shared with the current live model to make comparisons fair. Enter car-specific electricity prices only if that truly applies to the car, not simply because a utility tariff changed.
