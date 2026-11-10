@@ -86,3 +86,12 @@ The above official links were reviewed on **7 November 2026**. Rates, laws, deal
 3. Record **exact variant, date, coverage and location** for every future quotation.
 4. Separate **evidence**, **model assumptions**, and **contractual terms** in both docs and UI.
 5. Never invent financing terms to make a marketing rate match a preferred period; test the arithmetic.
+
+
+## 10 November 2026 — hybrid template caveats
+
+A **self-charging strong hybrid** has both an internal combustion engine and an electric drive motor but normally gets its replenishment energy from petrol and regenerative braking, **not** paid external grid electricity. For the default hybrid comparison use a single assumed combined real-world **18 km/L**; do **not** separately credit 'free electric kilometres'. The assumed 18 km/L is *not* a verified figure for a specific make, model or Kolkata test drive.
+
+Plug-in hybrids have an externally charged battery and can incur electricity bills. For them, the calculator accepts an estimated fraction of driving km powered by grid electricity and allocates the rest to petrol-mode mileage. Actual real-world consumption depends strongly on charging frequency, trip length and ambient conditions. This is a simplifying scenario input, not an official homologation or engineering model.
+
+The hybrid price (₹12L), insurance (₹15k/year), maintenance (₹10k/year), resale (₹5L) and ownership life (5 years) are still placeholders until real quotations and test drives arrive. A hybrid's battery warranty, servicing requirements and five-year resale need variant-specific evidence. See [test-drive notes](decision-process.md).
