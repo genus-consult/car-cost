@@ -1,49 +1,60 @@
 # Car cost comparison
 
-A small, independent **family car ownership-cost calculator** comparing a petrol car with a battery-financed electric car over a five-year period. Built for a first-time buyer in Kolkata, India. It is **not affiliated with Kia, CESC, any insurer, or a financing provider**.
+An independent, mobile-friendly car ownership comparison for a family in Kolkata, India.
 
 **Website:** https://genus-consult.github.io/car-cost/  
-**Source:** [index.html](index.html)  
-**Last documented:** 7 November 2026
+**Current calculator:** [index.html](index.html)  
+**Saved real-car records:** [data/cars.json](data/cars.json)  
+**Documentation reviewed:** 10 November 2026
 
-## Read this first
+## Two related views of the purchase decision
 
-The site estimates **equivalent monthly economic cost** (purchase, energy, driver, annual maintenance/insurance, resale, charger, EV battery loan and a chosen opportunity-cost rate). This is **not the same** as monthly out-of-pocket spending.
+**1. Three permanent financial templates** on the **Comparison** page:
 
-Default comparison, under the agreed **6% annual opportunity-cost** assumption:
+| Template | Default on-road purchase cost | Other core assumptions | Estimated monthly economic cost at 6% |
+|---|---:|---|---:|
+| Petrol | ₹12,00,000 | 10 km/L, ₹114/L | ₹49,619 |
+| Battery-financed electric | ₹8,00,000 **excluding battery** | Separately financed ₹5.5L battery at 9.5%/60 months, 0.20 kWh/km, ₹11/kWh, ₹75k charger | ₹43,301 |
+| Petrol-electric hybrid (self-charging) | ₹12,00,000 **including battery** | 18 km/L combined real-world petrol mileage, no external charging | ₹43,455 |
 
-| | Petrol | Battery-financed EV |
-|---|---:|---:|
-| Assumed initial vehicle price | ₹12 lakh on road | ₹8 lakh on road, **battery excluded** |
-| Estimated full economic monthly cost | **₹49,619** | **₹43,301** |
+All are **hypothetical illustrations, not real dealer offers**. They share 40 km/day, a five-year horizon, ₹18,000/month driver, ₹5 lakh gross resale proceeds and a 6% effective annual opportunity-cost assumption. All inputs are editable. The hybrid's 18 km/L figure is a **placeholder**, not a verified car specification.
 
-The EV has an **additional assumed ₹5.5 lakh battery loan** at **9.5% for 60 months** (EMI ~₹11,551/month), plus a ₹75,000 home charger. Both cars use 40 km/day and an assumed ₹5 lakh gross resale value after five years. Prices are **illustrations** and all inputs are editable. **Neither the vehicle prices nor the battery financing represent verified purchase quotations.**
+**2. Named cars and test drives** on the new **Shortlist** page. When a dealer quotation or test-drive impression is supplied, an AI or repository editor records it in `data/cars.json`. Each car gets a modelled ownership cost under the same calculation, quotation information, and separate **positive points, negative points, and open questions**. **The three templates remain on the site** and are not overwritten.
 
-## Project knowledge base
+The financial model does not automatically score subjective preferences. The eventual choice depends on **both cost and actual driving/ownership impressions**.
 
-These files are intended to preserve the entire decision and reasoning trail if the original conversation is unavailable:
+## What the website includes
 
-1. **[Assumptions and decisions](docs/assumptions-and-decisions.md)** — full input table, units, choices, revisions, derived usage, and what superseded the old ₹12L EV assumption.
-2. **[Calculation methodology](docs/calculation-method.md)** — precise formulas, cash-flow timing, 6% vs 0%, battery EMI, resale accounting, worked figures and regression checks.
-3. **[Research, evidence and caveats](docs/research-and-caveats.md)** — Kia Syros EV BaaS findings, source links, insurance basics, CESC charging assumptions, unresolved questions for dealers, and uncertainty labels.
-4. **[Development handoff and lessons](docs/maintenance-and-lessons.md)** — GitHub Pages setup, iPhone preview limitations, simple family-facing design decisions, corrected navigation, sharing decisions, QA instructions and future work.
+- **Comparison:** Three generic model templates, with automatically updated monthly equivalent ownership costs.
+- **Shortlist:** Named real cars from GitHub JSON, including quote inputs and subjective notes, with expandable cost breakdowns. Initially empty until the first actual quotation is provided.
+- **Assumptions:** Editable vehicle, fuel, battery, charger, hybrid, driver, resale, insurance, maintenance and growth assumptions; reset to defaults.
+- **Details:** Discounted cash-flow components, five-year nominal costs, recurring expenses and transparent formulas.
 
-**Important research distinction:** Kia publicly advertises BaaS starting at ₹7.99L *ex-showroom* with an illustrative battery EMI of ₹3.30/km based on 2,200 km/month. The model's **₹8L on-road vehicle assumption and ₹11,551/month battery EMI are not Kia quotations**. Do not multiply the marketed ₹3.30 by the buyer's actual kilometres and treat that as a contractual billing rate without written confirmation.
+The site is a static, self-contained `index.html` hosted via **GitHub Pages** from `main` / `(root)`. It also fetches **`data/cars.json`** on page load to display named cars; there is no server database or login. The raw JSON and source code are in a **public repo**. Inputs changed in a visitor's browser are **not automatically written back** to GitHub.
 
-## How to use and share
+## Project documents
 
-Open the [public site](https://genus-consult.github.io/car-cost/) on iPhone, Android or a desktop browser. Use the **Comparison**, **Assumptions** and **Details** tabs. Edit inputs to recalculate; use **Reset** to return to the agreed defaults. Family members may freely use the same website URL.
+- [Assumptions and decisions](docs/assumptions-and-decisions.md) — dated choices, units and superseded assumptions.
+- [Calculation methodology and 6% audit](docs/calculation-method.md) — formulas, cash-flow dates, monthly equivalent, 0% comparison, independent verification.
+- [Research and caveats](docs/research-and-caveats.md) — Kia BaaS, third-party and own-damage insurance, CESC, tariffs, warranty, missing evidence.
+- [Adding car quotations](docs/adding-car-quotes.md) — how to store future actual vehicles, safe public data, JSON record schema.
+- [Decision process / test-drive guide](docs/decision-process.md) — evidence quality, positives, negatives and conditions before purchase.
+- [Maintenance and lessons](docs/maintenance-and-lessons.md) — iPhone compatibility, interface decisions, GitHub Pages, regression checks, future-AI handoff.
 
-The **Share scenario** button was intentionally removed; sharing the homepage URL sends the current **default model**, not whatever one person edited in their browser. If a number differs between devices, compare the assumptions on each device.
+## When new quotes arrive
 
-The site is hosted by **GitHub Pages** from branch `main`, folder `/(root)`. It is a single self-contained `index.html`, with no required server, login or subscription. Some iPhone **file-preview** apps block JavaScript when opening an HTML attachment; use the hosted HTTPS site for interactive calculations.
+1. Share the source quotation/PDF/photos and test-drive notes in ChatGPT.
+2. Extract the exact car/variant, date, Kolkata on-road amount and exclusions. Mark any estimated values clearly.
+3. Add/update a record in **`data/cars.json`**, without changing the three generic templates.
+4. Add dated pros/cons and open questions, keeping subjective observations separate from sourced technical facts.
+5. Recheck calculations and the hosted **Shortlist** page.
 
-## Updating the model
+**Privacy:** The repository is public. Never commit unredacted names, phone numbers, addresses, account information, customer IDs, signatures or confidential quote attachments. Keep sanitized facts, or obtain explicit permission before publishing documents.
 
-Read the linked documents before making changes. Edit `index.html`, including **JavaScript defaults, matching HTML input default values and pre-rendered fallback figures**, then test calculations, responsive iPhone display and navigation. GitHub Pages publishes changes committed to `main`.
+## Important modelling caveats
 
-The repository is **public**; do not upload private correspondence, identifying details, confidential quotations or account information without proper permission and redaction.
-
-## Next decisions
-
-The biggest unresolved financial inputs are **actual Kolkata on-road prices**, a **written battery-loan schedule and sale/foreclosure rights**, **five-year resale estimates**, insurance quotations and an **actual marginal CESC charging cost**. See the [research checklist](docs/research-and-caveats.md#questions-to-get-answered-in-writing-by-dealer--financing-partner).
+- Full **equivalent monthly economic cost** includes purchase, running expenses, resale and the 6% opportunity-cost assumption; it is not literal monthly cash outflow.
+- The EV battery's ~₹11,551 EMI is **hypothetical financing**, not Kia's officially guaranteed plan. Kia's advertised ₹3.30/km is an illustrative financing-equivalent headline.
+- Self-charging hybrids obtain all usable energy from petrol; the electric motor's benefit is already reflected in km/L. For a plug-in hybrid, an optional grid-electric-kilometres share is available with a separate kWh/km and tariff input.
+- Unquoted candidate inputs inherit generic template assumptions. A generated monthly cost is **a model result, not a dealer price**.
+- The normal public URL can be sent via WhatsApp. iPhone HTML attachment previews may block JavaScript, so use the hosted link for interactivity.
